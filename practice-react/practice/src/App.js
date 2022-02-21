@@ -4,7 +4,7 @@ import {FormRecognizerClient,AzureKeyCredential} from "@azure/ai-form-recognizer
 
 const endpoint = "https://b7012116-psp-fr.cognitiveservices.azure.com/";
     const apiKey = "4319cc85809a4849bd8f188d3d6feb08";
-    const modelId = "cf822ea1-818e-4619-83a6-5d07774619ff";
+    const modelId = "db53e4ce-ef03-47bf-93c5-3af1e7c52bf6";
     
 
 
@@ -48,7 +48,7 @@ function App() {
       for (const fieldName in form.fields) {
         // each field is of type FormField
         const field = form.fields[fieldName];
-        if(fieldName == "Total") setTotal(field.value.substring((1)))
+        if(fieldName == "Total" && field != null) setTotal(field.value.substring((1)))
         console.log(
           `Field ${fieldName} has value '${field.value}' with a confidence score of ${field.confidence}`
         );
