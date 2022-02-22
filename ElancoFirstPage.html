@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>CSS Progress Bar</title>
+ <style>
+   
+   body {
+  margin:0px;
+  height:100vh;
+  background: black;
+}
+.center {
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:left;
+  left: 100px;
+
+}
+.topbar{
+        position: sticky;
+        top: 0px;
+        height: 50px;
+        left: 0%;
+    width: 100%;
+    background-color: #033357;
+
+    }
+.topbar2{
+        position: fixed;
+        top: 51px;
+        height: 50px;
+        left: 0%;
+    width: 100%;
+    background-color: white;
+    border: 1px;
+    border-style: solid;
+    border-color: black;
+
+    }
+.form-input {
+  width:350px;
+  padding:20px;
+  background:#033357;
+  box-shadow: -3px -3px 7px rgba(94, 104, 121, 0.377),
+              3px 3px 7px rgba(94, 104, 121, 0.377);
+}
+.form-input input {
+ 
+
+}
+.form-input label {
+  display:block;
+  width:45%;
+  height:45px;
+  margin-left: 25%;
+  line-height:50px;
+  text-align:center;
+  background:white;
+
+  color:#033357;
+  font-size:15px;
+  font-family:"Open Sans",sans-serif;
+  text-transform:Uppercase;
+  font-weight:600;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.form-input img {
+  width:100%;
+  display:none;
+
+  margin-bottom:30px;
+}
+.firstname{
+  position: fixed;
+  left: 600px;
+  top: 200px;
+  
+
+
+}
+.Lname{
+  
+}
+.address{
+  
+}
+.city{
+  
+}
+.state{
+  
+}
+.zipcode{
+  
+}
+.Phone{
+  
+}
+.email{
+  
+}
+.Cemail{
+  
+}
+.vetzip{
+  
+}
+.addresssearch{
+  
+}
+.amount{
+  
+}
+.petname{
+  
+}
+
+   
+  </style>
+
+</head>
+<body>
+  <div class="topbar"></div>
+    <div class="topbar2"></div>
+ <div class="center">
+  <div class="form-input">
+    <div class="preview">
+      <img id="file-ip-1-preview">
+    </div>
+    <label for="file-ip-1">Upload Image</label>
+    <input type="file" id="file-ip-1" accept="image/*" onchange="showPreview(event);"/>
+
+     <div class="firstname">
+        <label for="fname">First name:</label>
+        <input type="text" id="fname" name="fname"/>
+    </div>
+       
+        
+   
+    
+
+<script type="text/javascript">
+  function showPreview(event){
+  if(event.target.files.length > 0){
+    var src = URL.createObjectURL(event.target.files[0]);
+    var preview = document.getElementById("file-ip-1-preview");
+    preview.src = src;
+    preview.style.display = "block";
+  }
+}
+</script>
+</body>
+</html>
