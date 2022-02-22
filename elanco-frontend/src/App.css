@@ -1,0 +1,103 @@
+body {
+    margin:0px;
+    height:100vh;
+  }
+  .center {
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:left;
+    left: 100px;
+  
+  }
+  .topbar{
+          position: sticky;
+          top: 0px;
+          height: 50px;
+          left: 0%;
+      width: 100%;
+      background-color: #033357;
+  
+      }
+  .topbar2{
+          position: fixed;
+          top: 51px;
+          height: 50px;
+          left: 0%;
+      width: 100%;
+      background-color: white;
+      border: 1px;
+      border-style: solid;
+      border-color: black;
+  
+      }
+  .form-input {
+    width:350px;
+    padding:20px;
+    margin: auto;
+  }
+  .preview{
+    height: 25vh;
+    margin-bottom: 3vh;
+  }
+  .form-input label {
+    display:block;
+    width:45%;
+    height:45px;
+    margin-left: 25%;
+    line-height:50px;
+    text-align:center;
+    background:white;
+  
+
+    font-size:15px;
+    font-family:"Open Sans",sans-serif;
+    text-transform:Uppercase;
+    font-weight:600;
+    border-radius:5px;
+    cursor:pointer;
+  }
+  
+  .form-input img {
+    width:100%;
+    height: 25vh;
+  }
+  .firstname{
+    position: fixed;
+    left: 600px;
+    top: 200px;
+    
+  
+  }  
+  .container{
+    height: 50vh;
+    display: grid;
+    grid-template-areas: 
+    'blank image image rebate rebate blank2'
+    
+    ;
+    width:100%;
+    gap: 3vw;
+    margin-top: 5vh ;
+  }
+  .container >div{
+    padding: 5vh;
+    text-align: center;
+  }
+  .image-container{
+    text-align: center;
+
+    grid-area: image;
+    background-color: #CAEFEB;
+  }
+  .rebate-view{
+    background-color: #CAEFEB;
+    grid-area: rebate;
+  }
+  h1{
+    font-family: Open Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+    color: #033357;
+    width: 25vw;
+    margin: auto;
+  }
+  
