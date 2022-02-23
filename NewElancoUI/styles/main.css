@@ -35,6 +35,7 @@ body {
 .header-cta a {
     font-size: 14px;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .header-user-cta {
@@ -62,11 +63,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 
 .upload-cta {
     text-align: center;
     padding: 30px;
+    cursor: pointer;
 }
 
 .upload-cta input {
@@ -187,4 +190,43 @@ body {
     padding: 15px 25px;
     border: none;
     border-radius: 5px;
+    cursor: pointer;
+}
+
+@media only screen and (min-width: 450px) {
+
+    .rebate-form-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .header-container, .claim-rebate-container, .rebate-form-section {
+        padding: 20px 40px;
+    }
+
+    .rebate-form-container {
+        padding: 0;
+    }
+}
+
+@media only screen and (min-width: 860px) {
+    .rebate-form-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: unset;
+        margin: 0;
+        max-width: unset;
+        gap: 100px;
+    }
+}
+
+@media only screen and (min-width: 1280px) {
+    .header-container, .claim-rebate-container, .rebate-form-section {
+        max-width: 900px;
+        margin: 0 auto;
+    }
 }
