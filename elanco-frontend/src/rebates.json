@@ -1,1 +1,32 @@
-{"hello" :"hi"}
+{
+  "rebates": [
+    {
+      "productName": "Interceptor Plus",
+      "productNames":["Interceptor Plus green 8-25lb. 6pk.","6pk Interceptor Plus - Yellow"],
+      "rebateValue": [["6 doses","6"],["12 doses","15"]],
+      "image": "/PackShots_Logos/InterceptorPlus.png",
+      "offerCode": "INT2021",
+      "startDate":"01/01/21",
+      "endDate":"12/31/21",
+      "deadline":"03/01/22"
+    },{
+      "productName": "Galliprant",
+      "productNames":["90 Galliprant 60mg*"],
+      "rebateValue": [["30 tablets 20mg","15"],["30 tablets 60mg","25"],["30 tablets 100mg", "35"],["90 tablets 20mg","45"],["90 tablets 60mg", "65"],["90 tablets 100mg","95"]],
+      "image": "/PackShots_Logos/Galliprant.png",
+      "offerCode": "GPT2022",
+      "startDate":"01/01/21",
+      "endDate":"12/31/21",
+      "deadline":"03/01/22"
+    },{
+      "productName": "Trifexis",
+      "productNames":["Trifex 9 [10.1-20lbs)270 mg.","Trifexis (10. 1-20lbs)270 mg."],
+      "rebateValue": [["6 doses","20"],["12 doses","40"]],
+      "image": "/PackShots_Logos/Trifexis.png",
+      "offerCode": "TFX2022",
+      "startDate":"01/01/22",
+      "endDate":"12/31/22",
+      "deadline":"03/01/23"
+    }
+  ]
+}

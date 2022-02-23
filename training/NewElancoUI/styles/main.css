@@ -1,0 +1,269 @@
+:root {
+    --main-dark-blue: #033357;
+    --secondary-white: #FFF;
+    --info-rebate-cyan: #caefeb;
+    --small-text-grey: #9d9d9d;
+}
+
+*, ::after, ::before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: sans-serif;
+}
+
+/* HEADER */
+.header-section {
+    background-color: var(--main-dark-blue);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    color: var(--secondary-white);
+    text-align: center;
+}
+
+.header-container h1 {
+    font-size: 18px;
+}
+
+.header-cta a {
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.header-user-cta {
+    display: none;
+}
+
+/* CLAIM REBATE */
+.claim-rebate-section {
+    background-color: var(--secondary-white);
+}
+.claim-rebate-container {
+    padding: 20px 10px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 190px;
+    gap: 10px;
+}
+
+.claim-rebate-upload-and-invoices {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 190px 190px;
+    gap: 10px;
+}
+
+.rebate-container {
+    background-color: var(--info-rebate-cyan);
+    padding: 15px;
+}
+
+.rebate-upload {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.upload-cta {
+    text-align: center;
+    padding: 30px;
+    cursor: pointer;
+}
+
+.upload-cta input {
+    display: none !important;
+}
+
+.upload-cta svg {
+    width: 40px;
+    height: auto;
+}
+
+.upload-cta h4 {
+    font-size: 16px;
+    margin: 10px 10px 15px 10px;
+}
+
+.upload-cta p {
+    font-size: 12px;
+    color: var(--small-text-grey);
+}
+
+/* UPLOADED INVOICE */
+.rebate-header h4 {
+    padding-bottom: 10px;
+}
+
+.rebate-uploaded-invoices {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px 100px));
+    grid-auto-rows: 1fr;
+}
+
+.rebate-uploaded-invoice img {
+    width: 100px;
+    height: 100%;
+}
+
+/* FOUND PRODUCTS MATCHING REBATE */
+#rebate-found-products {
+    overflow-y: scroll;
+}
+
+.rebate-products {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.rebate-product {
+    background-color: var(--secondary-white);
+    padding: 15px;
+}
+
+.rebate-product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rebate-product-details {
+    margin: 20px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 1fr;
+}
+
+.rebate-product-details h5:nth-child(even), p:nth-child(even) {
+    justify-self: end;
+}
+
+.rebate-product a {
+    color: blue;
+    text-decoration: underline;
+}
+
+/* FORM */
+.rebate-form-container {
+    padding: 20px 10px;
+}
+
+.form-personal-details h3 {
+    padding-bottom: 20px;
+}
+
+.rebate-form-container p {
+    font-size: 12px;
+    margin: 5px 0;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    margin: 25px 0;
+}
+
+.form-field label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: var(--main-dark-blue);
+}
+
+.form-field label > span {
+    color: red;
+}
+
+.form-field input {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 2px solid var(--main-dark-blue);
+    background-color: var(--secondary-white);
+    font-size: 18px;
+}
+
+.form-submit-cta > button {
+    background-color: #007bff;
+    color: var(--secondary-white);
+    padding: 15px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+@media only screen and (min-width: 450px) {
+
+    .rebate-form-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .header-container, .claim-rebate-container, .rebate-form-section {
+        padding: 20px 40px;
+    }
+
+    .rebate-form-container {
+        padding: 0;
+    }
+
+    .rebate-product-header {
+        display: grid;
+        grid-template-columns: 230px 1fr;
+    }
+
+    .rebate-product-header h5 {
+        justify-self: start;
+    }
+
+    .rebate-product-details {
+        max-width: 460px;
+    }
+
+    .rebate-product-details h5:nth-child(even), p:nth-child(even) {
+        justify-self: start;
+    }
+}
+
+@media only screen and (min-width: 860px) {
+    .rebate-form-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: unset;
+        margin: 0;
+        max-width: unset;
+        gap: 100px;
+    }
+
+    .claim-rebate-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 190px 380px;
+    }
+
+    .claim-rebate-upload-and-invoices {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        grid-template-rows: 1fr;
+    }
+}
+
+@media only screen and (min-width: 1280px) {
+    .header-container, .claim-rebate-container, .rebate-form-section {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+}
