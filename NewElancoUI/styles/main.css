@@ -50,7 +50,14 @@ body {
     padding: 20px 10px;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(3, 190px);
+    grid-template-rows: 1fr 190px;
+    gap: 10px;
+}
+
+.claim-rebate-upload-and-invoices {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 190px 190px;
     gap: 10px;
 }
 
@@ -211,6 +218,23 @@ body {
     .rebate-form-container {
         padding: 0;
     }
+
+    .rebate-product-header {
+        display: grid;
+        grid-template-columns: 230px 1fr;
+    }
+
+    .rebate-product-header h5 {
+        justify-self: start;
+    }
+
+    .rebate-product-details {
+        max-width: 460px;
+    }
+
+    .rebate-product-details h5:nth-child(even), p:nth-child(even) {
+        justify-self: start;
+    }
 }
 
 @media only screen and (min-width: 860px) {
@@ -221,6 +245,19 @@ body {
         margin: 0;
         max-width: unset;
         gap: 100px;
+    }
+
+    .claim-rebate-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 190px 380px;
+    }
+
+    .claim-rebate-upload-and-invoices {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        grid-template-rows: 1fr;
     }
 }
 
