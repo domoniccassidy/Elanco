@@ -27,6 +27,15 @@
       "startDate":"01/01/22",
       "endDate":"12/31/22",
       "deadline":"03/01/23"
+    },{
+      "productName": "Credelio",
+      "productNames":["Credelio","Crede","Credel"],
+      "rebateValue": [["3 doses","5"],["6 doses","15"]],
+      "image": "/PackShots_Logos/credelio.jpg",
+      "offerCode": "CAT2022",
+      "startDate":"01/01/22",
+      "endDate":"12/31/22",
+      "deadline":"03/01/23"
     }
   ]
 }
