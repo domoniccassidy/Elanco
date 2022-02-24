@@ -390,8 +390,8 @@ const RebatePage = () => {
             <h4>We found these matching rebates</h4>
             <a onClick={(e) => setIsModal(true)}>Can't find your rebate?</a>
             {products != [] &&
-              products.map((e) => {
-                return <Rebate rebate={e}></Rebate>;
+              products.map((e,key) => {
+                return <Rebate rebate={e} setProducts ={setProducts} products ={products}  index = {key}></Rebate>;
               })}
           </div>
         </div>
