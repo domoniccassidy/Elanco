@@ -3,6 +3,9 @@
     --secondary-white: #FFF;
     --info-rebate-cyan: #caefeb;
     --small-text-grey: #9d9d9d;
+    --info-error: #f20e16;
+    --info-warning: #ffc107;
+    --info-success: #28a745;
 }
 
 *, ::after, ::before {
@@ -167,6 +170,28 @@ body {
 .rebate-form-container p {
     font-size: 12px;
     margin: 5px 0;
+}
+
+.invalid-message {
+    color: var(--info-error) !important;
+    font-size: 12px !important;
+}
+
+.low-confidence-message {
+    color: var(--info-warning) !important;
+    font-size: 12px !important;
+}
+
+.success-input {
+   border: 2px solid var(--info-success) !important;
+}
+
+.invalid-input {
+    border: 2px solid var(--info-error) !important;
+}
+
+.low-confidence-input {
+    border: 2px solid var(--info-warning) !important;
 }
 
 .form-field {
