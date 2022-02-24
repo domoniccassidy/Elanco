@@ -11,7 +11,7 @@
       "deadline":"03/01/22"
     },{
       "productName": "Galliprant",
-      "productNames":["90 Galliprant 60mg*"],
+      "productNames":["90 Galliprant 60mg*","Galliprant"],
       "rebateValue": [["30 tablets 20mg","15"],["30 tablets 60mg","25"],["30 tablets 100mg", "35"],["90 tablets 20mg","45"],["90 tablets 60mg", "65"],["90 tablets 100mg","95"]],
       "image": "/PackShots_Logos/Galliprant.png",
       "offerCode": "GPT2022",

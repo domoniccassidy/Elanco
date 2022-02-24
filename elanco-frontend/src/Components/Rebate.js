@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const Rebate = (rebate) => {
-  const [selectedValue, setSelectedValue] = useState(0);
+  const [selectedValue, setSelectedValue] = useState();
 
   const subRebate = rebate.rebate;
   return (
@@ -15,18 +15,18 @@ const Rebate = (rebate) => {
           <div class="rebate-product-details">
             <h5>Offer details</h5>
             <h5>Rebate value</h5>
-            <p></p>
+            <h5>Is Selected</h5>
             {subRebate.rebateValue.map((val, key) => {
               console.log(key);
               return (
                 <>
-                  <p className>
-                    {val[0]}
-                  </p>
-                  <p className>
-                    ${val[1]}
-                  </p>
-                  <input type="checkbox" value={true}/>
+                  <p className>{val[0]}</p>
+                  <p className>${val[1]}</p>
+                  <input
+                    type="checkbox"
+                    onChange={() => setSelectedValue(key)}
+                    checked={selectedValue === key}
+                  />
                 </>
               );
             })}

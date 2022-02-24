@@ -6,6 +6,7 @@
     --info-error: #f20e16;
     --info-warning: #ffc107;
     --info-success: #28a745;
+    --info-light: #f8f9fa;
 }
 
 *, ::after, ::before {
@@ -56,9 +57,15 @@ body {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 190px;
-    gap: 10px;
+    gap: 20px;
 }
-
+.form-submit-cta > input {
+    background-color: var(--info-light);
+    color: var(--main-dark-blue);    padding: 15px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 .claim-rebate-upload-and-invoices {
     display: grid;
     grid-template-columns: 1fr;
@@ -149,9 +156,7 @@ body {
     grid-auto-rows: 1fr;
 }
 
-.rebate-product-details h5:nth-child(even), p:nth-child(even) {
-    justify-self: end;
-}
+
 
 .rebate-product a {
     color: blue;
@@ -180,6 +185,7 @@ body {
     font-size: 12px !important;
     display: none;
 }
+
 
 .low-confidence-message {
     color: var(--info-warning) !important;
@@ -356,6 +362,19 @@ body {
 .hide{
     display: none;
 }
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 .rebate-help a {
     justify-self: center;
 }
@@ -365,3 +384,48 @@ body {
         max-width: 560px; /* Could be more or less, depending on screen size */
     }
 }
+.loading-container {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: hidden; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-content {
+    background-color: var(--secondary-white);
+    margin: 15vh auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: none;
+    width: 70%;
+    max-width: 450px;
+    height: 30vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 25px;
+    align-items: center;
+}
+.flex{
+    display: flex !important;
+}
+
+.loader {
+    border: 6px solid #f3f3f3; /* Light grey */
+    border-top: 6px solid var(--main-dark-blue); /* Blue */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }}
