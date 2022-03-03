@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import rebates from "../rebates.json";
 import Rebate from "./Rebate";
+import Rebate2 from "./Rebate2";
+import { ImCross } from "react-icons/im";
+import { signIn, signUp } from "../html";
 
 import {
   FormRecognizerClient,
@@ -11,11 +14,14 @@ const RebatePage = () => {
   const [file, setFile] = useState(null);
   const [file2, setFile2] = useState(null);
   const [products, setProducts] = useState([]);
+  const [accountWindow, setAccountWindow] = useState("");
   const [total, setTotal] = useState("");
   const [isModal, setIsModal] = useState(false);
+  const [isChoice, setIsChoice] = useState(false);
   const [isAi, setIsAi] = useState(false);
   const [isCustom, setIsCustom] = useState(false);
   const [isLayout, setIsLayout] = useState(false);
+  const [noRebates, setNoRebates] = useState(false);
   const [errors, setErrors] = useState({
     forenameError: "",
     surnameError: "",
@@ -44,6 +50,20 @@ const RebatePage = () => {
     address: "",
     city: "",
     state: "",
+    zip: "",
+    phone: "",
+    email: "",
+    confirmEmail: "",
+    pet: "",
+  });
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [accountForm, setAccountForm] = useState({
+    forename: "",
+    surname: "",
+    address: "",
+    city: "",
+    state: "",
+    confirmPassword:"",
     zip: "",
     phone: "",
     email: "",
@@ -102,6 +122,45 @@ const RebatePage = () => {
     }
     setErrors(newErrors);
   };
+  const onSignUp = (e) => {
+    e.preventDefault();
+    signUp(accountForm).then((e) => {
+      setUserForm(e.data.user);
+      setAccountWindow("");
+    });
+    setIsSignedIn(true)
+
+  };
+  const onSignOut = (e) =>{
+    e.preventDefault()
+    setAccountForm({
+      forename: "",
+      surname: "",
+      address: "",
+      city: "",
+      state: "",
+      confirmPassword:"",
+      zip: "",
+      phone: "",
+      email: "",
+      confirmEmail: "",
+      pet: "",
+    })
+    setUserForm({
+      forename: "",
+      surname: "",
+      address: "",
+      city: "",
+      state: "",
+      confirmPassword:"",
+      zip: "",
+      phone: "",
+      email: "",
+      confirmEmail: "",
+      pet: "",
+    })
+    setIsSignedIn(false)
+  }
 
   const onReset = () => {
     setUserForm({
@@ -140,7 +199,7 @@ const RebatePage = () => {
       clinicAddressError: "",
       clinicStateError: "",
       clinicZipError: "",
-    })
+    });
   };
   const changeFile = (e) => {
     setIsAi(true);
@@ -155,12 +214,28 @@ const RebatePage = () => {
     setFile2(e.target.files[0]);
   };
   useEffect(() => {
-    analyze();
+    analyze().then(() => {
+      console.log(products);
+      if (products.length < 1) {
+        console.log("hello");
+        setNoRebates(true);
+      }
+    });
     analyzeCustom();
   }, [file]);
   useEffect(() => {
     analyzeForm();
   }, [file2]);
+
+  const onSignIn = (e) => {
+    e.preventDefault();
+    signIn(accountForm).then((e) => {
+      console.log("hello");
+      setUserForm(e.data.user);
+      setAccountWindow("");
+    });
+    setIsSignedIn(true)
+  };
 
   const analyze = async () => {
     const client = new FormRecognizerClient(
@@ -186,7 +261,7 @@ const RebatePage = () => {
             );
             rebates.rebates.map((rebate) => {
               if (
-                rebate.productNames?.includes(element.value.Description.value)
+                rebate?.productNames?.includes(element.value.Description.value)
               ) {
                 setProducts([
                   ...products,
@@ -202,6 +277,7 @@ const RebatePage = () => {
         }
       }
     }
+
     setIsAi(false);
   };
   const analyzeCustom = async () => {
@@ -339,12 +415,27 @@ const RebatePage = () => {
             </a>
           </div>
           <div class="header-right">
-            <div class="header-cta">
-              <a>Log In</a>
-            </div>
-            <div class="header-user-cta">
-              <a>Log Out</a>
-            </div>
+            {isSignedIn ? (
+              <div class="header-cta">
+                <a onClick={onSignOut}>Log Out</a>
+              </div>
+            ) : (
+              <div class="header-cta">
+                <span
+                  className="clickable"
+                  onClick={() => setAccountWindow("login")}
+                >
+                  Log in
+                </span>{" "}
+                /{" "}
+                <span
+                  className="clickable"
+                  onClick={() => setAccountWindow("signup")}
+                >
+                  Sign up
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -390,8 +481,15 @@ const RebatePage = () => {
             <h4>We found these matching rebates</h4>
             <a onClick={(e) => setIsModal(true)}>Can't find your rebate?</a>
             {products != [] &&
-              products.map((e,key) => {
-                return <Rebate rebate={e} setProducts ={setProducts} products ={products}  index = {key}></Rebate>;
+              products.map((e, key) => {
+                return (
+                  <Rebate
+                    rebate={e}
+                    setProducts={setProducts}
+                    products={products}
+                    index={key}
+                  ></Rebate>
+                );
               })}
           </div>
         </div>
@@ -755,7 +853,14 @@ const RebatePage = () => {
           <div class="rebate-help">
             <a>
               Please take a picture of your product and we'll search for a
-              rebate
+              rebate. Or{" "}
+              <span
+                onClick={() => {
+                  setIsChoice(true);
+                }}
+              >
+                Select a rebate manually
+              </span>
             </a>
           </div>
           <div class="modal-cards">
@@ -811,6 +916,381 @@ const RebatePage = () => {
         <div class="loading-content">
           <div class="loader"></div>
           <p>Analysing your invoice...</p>
+        </div>
+      </div>
+      <div className={`loading-container ${noRebates && "flex"}`}>
+        <div class="loading-content">
+          <div
+            onClick={() => setNoRebates(false)}
+            style={{ alignSelf: "flex-end" }}
+            className="crossHolder"
+          >
+            <ImCross />
+          </div>
+
+          <p>Sorry, we couldn't find any rebates for this receipt</p>
+        </div>
+      </div>
+      <div class={`modal-products ${isChoice && "show"}`}>
+        <div class="modal-content">
+          <div class="rebate-help">
+            <a>Please select the rebates you'd like to claim from this list.</a>
+          </div>
+          <div class="modal-cards">
+            {rebates.rebates.map((r) => {
+              return (
+                <Rebate2
+                  rebate={r}
+                  products={products}
+                  setProducts={setProducts}
+                ></Rebate2>
+              );
+            })}
+          </div>
+          <div class="form-submit-cta">
+            <button
+              onClick={() => {
+                setIsChoice(false);
+              }}
+            >
+              Ok
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className={`modal-products ${accountWindow !== "" && "show"}`}>
+        <div className="modal-content" height="800px" style={{overflow:"auto"}}>
+          <section class="rebate-form-section">
+            {accountWindow === "login" ? (
+              <div>
+                <form onSubmit={onSignIn}>
+                  <div className="account-container">
+                    <div class="form-field">
+                      <label for="email2">
+                        Email <span>*</span>
+                      </label>
+                      <input
+                        id="email2"
+                        type="text"
+                        value={accountForm.email}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            email: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.emailError !== "" && "show"
+                        }`}
+                      >
+                        {errors.emailError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="password">
+                        Password <span>*</span>
+                      </label>
+                      <input
+                        id="password"
+                        type="password"
+                        value={accountForm.password}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            password: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.emailError !== "" && "show"
+                        }`}
+                      >
+                        {errors.emailError}
+                      </p>
+                    </div>
+                    <div
+                      style={{ textAlign: "center" }}
+                      className="form-submit-cta"
+                    >
+                      {" "}
+                      <button type="submit">Submit</button>
+                    </div>{" "}
+                  </div>
+                </form>
+              </div>
+            ) : (
+              <div>
+                <form onSubmit={onSignUp}>
+                  <div className="account-container" >
+                    <div class="form-field">
+                      <label for="forename2">
+                        First Name <span>*</span>
+                      </label>
+                      <input
+                        id="forname2"
+                        type="text"
+                        value={accountForm.forename}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            forename: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.forenameError !== "" && "show"
+                        }`}
+                      >
+                        {errors.forenameError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="surname2">
+                        Last Name <span>*</span>
+                      </label>
+                      <input
+                        id="surname2"
+                        type="text"
+                        value={accountForm.surname}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            surname: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.surnameError !== "" && "show"
+                        }`}
+                      >
+                        {errors.surnameError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="address">
+                        Address <span>*</span>
+                      </label>
+                      <input
+                        id="address"
+                        type="text"
+                        value={accountForm.address}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            address: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.addressError !== "" && "show"
+                        }`}
+                      >
+                        {errors.addressError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="state">
+                        State <span>*</span>
+                      </label>
+                      <input
+                        id="state"
+                        type="text"
+                        value={accountForm.state}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            state: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.stateError !== "" && "show"
+                        }`}
+                      >
+                        {errors.stateError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="city">
+                        City <span>*</span>
+                      </label>
+                      <input
+                        id="phone"
+                        type="text"
+                        value={accountForm.city}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            city: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.cityError !== "" && "show"
+                        }`}
+                      >
+                        {errors.cityError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="zip2">
+                        Zip Code <span>*</span>
+                      </label>
+                      <input
+                        id="zip2"
+                        type="text"
+                        value={accountForm.zip}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            zip: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.zipError !== "" && "show"
+                        }`}
+                      >
+                        {errors.zipError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="email2">
+                        Email <span>*</span>
+                      </label>
+                      <input
+                        id="email2"
+                        type="text"
+                        value={accountForm.email}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            email: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.emailError !== "" && "show"
+                        }`}
+                      >
+                        {errors.emailError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="confirmEmail">
+                        Confirm Email <span>*</span>
+                      </label>
+                      <input
+                        id="email2"
+                        type="text"
+                        value={accountForm.confirmEmail}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            confirmEmail: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.confirmError !== "" && "show"
+                        }`}
+                      >
+                        {errors.confirmError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="password">
+                        Password <span>*</span>
+                      </label>
+                      <input
+                        id="password"
+                        type="password"
+                        value={accountForm.password}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            password: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.emailError !== "" && "show"
+                        }`}
+                      >
+                        {errors.emailError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="confrimPassword">
+                        Confirm Password <span>*</span>
+                      </label>
+                      <input
+                        id="confirmPassword"
+                        type="password"
+                        value={accountForm.confirmPassword}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            confirmPassword: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors?.passwordError !== "" && "show"
+                        }`}
+                      >
+                        {errors.emailError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="phone">
+                        Phone <span>*</span>
+                      </label>
+                      <input
+                        id="phone"
+                        type="text"
+                        value={accountForm.phone}
+                        onChange={(e) =>
+                          setAccountForm({
+                            ...accountForm,
+                            phone: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.phoneError !== "" && "show"
+                        }`}
+                      >
+                        {errors.phoneError}
+                      </p>
+                    </div>
+                    
+                    <div
+                      style={{ textAlign: "center" }}
+                      className="form-submit-cta"
+                    >
+                      {" "}
+                      <button type="submit">Submit</button>
+                    </div>{" "}
+                  </div>
+                </form>
+              </div>
+            )}
+          </section>
         </div>
       </div>
     </>

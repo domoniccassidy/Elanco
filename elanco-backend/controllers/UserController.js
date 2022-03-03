@@ -3,9 +3,9 @@ import UserProfile from "../models/userModel.js";
 import bcrypt from "bcryptjs"
 
 export const logIn = async (req, res) => {
-  let { username, password } = req.body;
+  let { email, password } = req.body;
   try {
-    const existingUser = await UserProfile.findOne({ username });
+    const existingUser = await UserProfile.findOne({ email });
 
     if (!existingUser) {
       return res.status(404).json({ message: "User not found" });
@@ -21,9 +21,9 @@ export const logIn = async (req, res) => {
   }
 };
 export const signup = async (req, res) => {
-  const { email, password, confirmPassword, username } = req.body;
+  const { email, password, confirmPassword,address,forename,surname,zip,phone,city,state } = req.body;
   try {
-    const existingUser = await UserProfile.findOne({ username });
+    const existingUser = await UserProfile.findOne({ email });
 
     if (existingUser) {
       return res
@@ -37,7 +37,13 @@ export const signup = async (req, res) => {
 
     const hashedPassword = bcrypt.hashSync(password,10)
     const user = await UserProfile.create({
-      username,
+      forename,
+      surname,
+      address,
+      zip,
+      phone,
+      city,
+      state,
       password:hashedPassword,
       email,
     });
