@@ -72,7 +72,7 @@ const RebatePage = () => {
   });
 
   const endpoint = "https://b7012116-psp-fr.cognitiveservices.azure.com/";
-  const apiKey = "4319cc85809a4849bd8f188d3d6feb08";
+  const apiKey = "3ead9492e5774bedaee4906d394f88ff  ";
   const modelId = "b89dd708-cd7e-4424-9208-899d9c06d53e";
 
   const onSubmit = (e) => {
@@ -214,17 +214,23 @@ const RebatePage = () => {
     setFile2(e.target.files[0]);
   };
   useEffect(() => {
-    analyze().then(() => {
-      console.log(products);
-      if (products.length < 1) {
-        console.log("hello");
-        setNoRebates(true);
-      }
-    });
-    analyzeCustom();
+    if(file!=null){
+      analyze().then(() => {
+        console.log(products);
+        if (products.length < 1) {
+          console.log("hello");
+          setNoRebates(true);
+        }
+      });
+      analyzeCustom();
+    }
+    
   }, [file]);
   useEffect(() => {
-    analyzeForm();
+    if(file2){
+      analyzeForm();
+
+    }
   }, [file2]);
 
   const onSignIn = (e) => {
