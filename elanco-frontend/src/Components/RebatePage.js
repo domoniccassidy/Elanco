@@ -215,6 +215,21 @@ const RebatePage = () => {
   };
   useEffect(() => {
     if(file!=null){
+      
+      setErrors({forenameError: "",
+      surnameError: "",
+      addressError: "",
+      cityError: "",
+      stateError: "",
+      zipError: "",
+      phoneError: "",
+      emailError: "",
+      confirmError: "",
+      petError: "",
+      clinicError: "",
+      clinicAddressError: "",
+      clinicStateError: "",
+      clinicZipError: "",})
       analyze().then(() => {
         console.log(products);
         if (products.length < 1) {
@@ -244,6 +259,7 @@ const RebatePage = () => {
   };
 
   const analyze = async () => {
+  
     const client = new FormRecognizerClient(
       endpoint,
       new AzureKeyCredential(apiKey)
@@ -287,6 +303,12 @@ const RebatePage = () => {
     setIsAi(false);
   };
   const analyzeCustom = async () => {
+    setPurchaseForm({
+      clinicName: "",
+      clinicAddress: "",
+      clinicState: "",
+      clinicZip: "",
+    })
     const client = new FormRecognizerClient(
       endpoint,
       new AzureKeyCredential(apiKey)
@@ -301,7 +323,10 @@ const RebatePage = () => {
     let tempErrors = { ...errors };
     for (const form of forms || []) {
       console.log("Fields: ");
-      let tempPurchaseForm = purchaseForm;
+      let tempPurchaseForm = {  clinicName: "",
+      clinicAddress: "",
+      clinicState: "",
+      clinicZip: "",};
       for (const fieldName in form.fields) {
         const field = form.fields[fieldName];
 
@@ -343,7 +368,7 @@ const RebatePage = () => {
                 clinicZip: tempAddress[tempAddress?.length - 1],
               };
             }
-
+          
             break;
           default:
             break;
