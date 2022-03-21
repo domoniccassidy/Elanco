@@ -211,7 +211,7 @@ body {
 }
 
 .form-field label {
-  display:flex;
+  display: flex;
   font-size: 14px;
   margin-bottom: 5px;
   color: var(--main-dark-blue);
@@ -444,36 +444,109 @@ body {
   }
 }
 .modal-products {
-    display: none;/* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    }
-    
-    .modal-cards > div > div > .form-submit-cta {
-        margin-top: 20px;
-    }
-    
-    .rebate-product-details-products {
-        margin: 20px 0;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-auto-rows: 1fr;
-    }   
-    .rebate-help span {
-        color: blue !important;
-        text-decoration: underline !important;
-        cursor: pointer;
-    }
-    .clickable{
-      cursor: pointer;
-    }
-    .modal-accounts{
-      display: none;
-    }
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal-cards > div > div > .form-submit-cta {
+  margin-top: 20px;
+}
+
+.rebate-product-details-products {
+  margin: 20px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
+}
+.rebate-help span {
+  color: blue !important;
+  text-decoration: underline !important;
+  cursor: pointer;
+}
+.clickable {
+  cursor: pointer;
+}
+.modal-accounts {
+  display: none;
+}
+.chat-container {
+  left: 0.4em;
+  width: 13em;
+  bottom: 5%;
+  position: fixed;
+}
+.chat-circle {
+  background: white;
+  z-index: 1000;
+  margin: auto;
+  box-shadow: 0 3px 8px 0 rgb(0 0 0 / 45%);
+  border-radius: 50%;
+  width: 5em;
+}
+.dog-img {
+  cursor: pointer;
+  width: 5em;
+}
+.block {
+  display: block !important;
+}
+.chat-div {
+  display: none;
+  margin: 0.5em auto;
+  height: 23em;
+  background-color: white;
+  box-shadow: 0 3px 8px 0 rgb(0 0 0 / 45%);
+  border-radius: 5%;
+  width: 13em;
+}
+.message-input {
+  width: 90%;
+}
+.chat-holder {
+  height: 90%;
+  display: flex;
+  flex-direction: column-reverse;
+}
+.message-form {
+  text-align: center;
+}
+.bot {
+  background-color: #0078d4;
+  float: left;
+}
+.user {
+  background-color: #e6e6e6;
+  float: right;
+}
+.hide {
+  display: none;
+}
+.message {
+  font-family: "Montserrat";
+  font-size: 11px;
+  width: 75%;
+  padding: 5%;
+  border-radius: 10px;
+  margin-bottom: 1em;
+  color: white;
+}
+.message-container {
+  margin: 0.5em auto;
+  width: 95%;
+  overflow: auto;
+}
+.dog-message {
+  margin-bottom: 0.5em;
+  text-align: center;
+  background-color: white;
+  box-shadow: 0 3px 8px 0 rgb(0 0 0 / 45%);
+  border-radius: 9999px;
+}

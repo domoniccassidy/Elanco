@@ -4,11 +4,14 @@ import Rebate from "./Rebate";
 import Rebate2 from "./Rebate2";
 import { ImCross } from "react-icons/im";
 import { signIn, signUp } from "../html";
-
 import {
   FormRecognizerClient,
   AzureKeyCredential,
 } from "@azure/ai-form-recognizer";
+
+const msRest = require("@azure/ms-rest-js");
+const qnamaker = require("@azure/cognitiveservices-qnamaker");
+const qnamaker_runtime = require("@azure/cognitiveservices-qnamaker-runtime");
 
 const RebatePage = () => {
   const [file, setFile] = useState(null);
@@ -22,6 +25,15 @@ const RebatePage = () => {
   const [isCustom, setIsCustom] = useState(false);
   const [isLayout, setIsLayout] = useState(false);
   const [noRebates, setNoRebates] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [dogMessage, setDogMessage] = useState(true);
+  const [userMessage, setUserMessage] = useState("");
+  const [messages, setMessages] = useState([
+    {
+      text: "Woof! Welcome to Elanco rebates!",
+      sender: "bot",
+    },
+  ]);
   const [errors, setErrors] = useState({
     forenameError: "",
     surnameError: "",
@@ -63,7 +75,7 @@ const RebatePage = () => {
     address: "",
     city: "",
     state: "",
-    confirmPassword:"",
+    confirmPassword: "",
     zip: "",
     phone: "",
     email: "",
@@ -74,7 +86,25 @@ const RebatePage = () => {
   const endpoint = "https://b7012116-psp-fr.cognitiveservices.azure.com/";
   const apiKey = "3ead9492e5774bedaee4906d394f88ff  ";
   const modelId = "b89dd708-cd7e-4424-9208-899d9c06d53e";
+  const subscriptionKey = "9075ee73270c411e933d44e16100ae66";
+  const chatEndpoint = "https://elano-bot.cognitiveservices.azure.com/";
+  const runtimeEndpoint = "https://elano-bot.azurewebsites.net";
+  const runtimeKey = "251ec7a7-1808-48ed-a501-fcb33d906d91";
 
+  const creds = new msRest.ApiKeyCredentials({
+    inHeader: { "Ocp-Apim-Subscription-Key": subscriptionKey },
+  });
+  const qnaMakerClient = new qnamaker.QnAMakerClient(creds, chatEndpoint);
+  const knowledgeBaseClient = new qnamaker.Knowledgebase(qnaMakerClient);
+  const queryRuntimeCredentials = new msRest.ApiKeyCredentials({
+    inHeader: {
+      Authorization: "EndpointKey " + runtimeKey,
+    },
+  });
+  const runtimeClient = new qnamaker_runtime.QnAMakerRuntimeClient(
+    queryRuntimeCredentials,
+    runtimeEndpoint
+  );
   const onSubmit = (e) => {
     const newErrors = {
       ...errors,
@@ -128,39 +158,38 @@ const RebatePage = () => {
       setUserForm(e.data.user);
       setAccountWindow("");
     });
-    setIsSignedIn(true)
-
+    setIsSignedIn(true);
   };
-  const onSignOut = (e) =>{
-    e.preventDefault()
+  const onSignOut = (e) => {
+    e.preventDefault();
     setAccountForm({
       forename: "",
       surname: "",
       address: "",
       city: "",
       state: "",
-      confirmPassword:"",
+      confirmPassword: "",
       zip: "",
       phone: "",
       email: "",
       confirmEmail: "",
       pet: "",
-    })
+    });
     setUserForm({
       forename: "",
       surname: "",
       address: "",
       city: "",
       state: "",
-      confirmPassword:"",
+      confirmPassword: "",
       zip: "",
       phone: "",
       email: "",
       confirmEmail: "",
       pet: "",
-    })
-    setIsSignedIn(false)
-  }
+    });
+    setIsSignedIn(false);
+  };
 
   const onReset = () => {
     setUserForm({
@@ -214,22 +243,23 @@ const RebatePage = () => {
     setFile2(e.target.files[0]);
   };
   useEffect(() => {
-    if(file!=null){
-      
-      setErrors({forenameError: "",
-      surnameError: "",
-      addressError: "",
-      cityError: "",
-      stateError: "",
-      zipError: "",
-      phoneError: "",
-      emailError: "",
-      confirmError: "",
-      petError: "",
-      clinicError: "",
-      clinicAddressError: "",
-      clinicStateError: "",
-      clinicZipError: "",})
+    if (file != null) {
+      setErrors({
+        forenameError: "",
+        surnameError: "",
+        addressError: "",
+        cityError: "",
+        stateError: "",
+        zipError: "",
+        phoneError: "",
+        emailError: "",
+        confirmError: "",
+        petError: "",
+        clinicError: "",
+        clinicAddressError: "",
+        clinicStateError: "",
+        clinicZipError: "",
+      });
       analyze().then(() => {
         console.log(products);
         if (products.length < 1) {
@@ -239,12 +269,10 @@ const RebatePage = () => {
       });
       analyzeCustom();
     }
-    
   }, [file]);
   useEffect(() => {
-    if(file2){
+    if (file2) {
       analyzeForm();
-
     }
   }, [file2]);
 
@@ -255,11 +283,25 @@ const RebatePage = () => {
       setUserForm(e.data.user);
       setAccountWindow("");
     });
-    setIsSignedIn(true)
+    setIsSignedIn(true);
   };
+  const onSendMessage = (e) => {
+    e.preventDefault();
 
+    generateAnswer(
+      runtimeClient,
+      "78ee9c6d-c2e8-4f6c-8e63-8dd6e2740e76",
+      userMessage
+    ).then(
+      () =>
+        (document.getElementsByClassName(
+          "message-container"
+        )[0].scrollTop = 10000)
+    );
+
+    setUserMessage("");
+  };
   const analyze = async () => {
-  
     const client = new FormRecognizerClient(
       endpoint,
       new AzureKeyCredential(apiKey)
@@ -308,7 +350,7 @@ const RebatePage = () => {
       clinicAddress: "",
       clinicState: "",
       clinicZip: "",
-    })
+    });
     const client = new FormRecognizerClient(
       endpoint,
       new AzureKeyCredential(apiKey)
@@ -323,10 +365,12 @@ const RebatePage = () => {
     let tempErrors = { ...errors };
     for (const form of forms || []) {
       console.log("Fields: ");
-      let tempPurchaseForm = {  clinicName: "",
-      clinicAddress: "",
-      clinicState: "",
-      clinicZip: "",};
+      let tempPurchaseForm = {
+        clinicName: "",
+        clinicAddress: "",
+        clinicState: "",
+        clinicZip: "",
+      };
       for (const fieldName in form.fields) {
         const field = form.fields[fieldName];
 
@@ -368,7 +412,7 @@ const RebatePage = () => {
                 clinicZip: tempAddress[tempAddress?.length - 1],
               };
             }
-          
+
             break;
           default:
             break;
@@ -426,7 +470,23 @@ const RebatePage = () => {
     }
     setIsLayout(false);
   };
-
+  const generateAnswer = async (runtimeClient, kb_id, question) => {
+    console.log(`Querying knowledge base...`);
+    setMessages([...messages, { text: userMessage, sender: "user" }]);
+    const tempMessages = [...messages, { text: userMessage, sender: "user" }];
+    const requestQuery = await runtimeClient.runtime.generateAnswer(kb_id, {
+      question: question,
+      top: 1,
+    });
+    if (requestQuery.answers[0].answer === "No good match found in KB.") {
+      setMessages([...tempMessages, { text: "Woof! Woof!", sender: "bot" }]);
+    } else {
+      setMessages([
+        ...tempMessages,
+        { text: requestQuery.answers[0].answer, sender: "bot" },
+      ]);
+    }
+  };
   return (
     <>
       <section class="header-section">
@@ -990,7 +1050,11 @@ const RebatePage = () => {
         </div>
       </div>
       <div className={`modal-products ${accountWindow !== "" && "show"}`}>
-        <div className="modal-content" height="800px" style={{overflow:"auto"}}>
+        <div
+          className="modal-content"
+          height="800px"
+          style={{ overflow: "auto" }}
+        >
           <section class="rebate-form-section">
             {accountWindow === "login" ? (
               <div>
@@ -1055,7 +1119,7 @@ const RebatePage = () => {
             ) : (
               <div>
                 <form onSubmit={onSignUp}>
-                  <div className="account-container" >
+                  <div className="account-container">
                     <div class="form-field">
                       <label for="forename2">
                         First Name <span>*</span>
@@ -1309,7 +1373,6 @@ const RebatePage = () => {
                         {errors.phoneError}
                       </p>
                     </div>
-                    
                     <div
                       style={{ textAlign: "center" }}
                       className="form-submit-cta"
@@ -1322,6 +1385,41 @@ const RebatePage = () => {
               </div>
             )}
           </section>
+        </div>
+      </div>
+      <div className="chat-container">
+        <div className={`dog-message ${!dogMessage && "hide"}`}>
+          Click me for help!
+        </div>
+        <div className={`chat-div ${showChat && "block"}`}>
+          <div className="chat-holder">
+            <div className="message-container">
+              {messages.map((m) => {
+                return <div className={`message ${m.sender}`}>{m.text}</div>;
+              })}
+            </div>
+          </div>
+          <div className="user-message">
+            <form onSubmit={onSendMessage} className="message-form">
+              <input
+                type="text"
+                value={userMessage}
+                onChange={(e) => setUserMessage(e.target.value)}
+                className="message-input"
+              />
+            </form>
+          </div>
+        </div>
+        <div className="chat-circle">
+          <img
+            onClick={() => {
+              setShowChat(!showChat);
+              setDogMessage(false);
+            }}
+            src="https://assets-us-01.kc-usercontent.com/9965f6dc-5ed5-001e-1b5b-559ae5a1acec/baf81711-8523-478d-95b0-815bee4a1327/MixedColor_Dog_Normal.svg"
+            alt="A friendly dog to guide you througout your rebate journey"
+            className="dog-img"
+          />
         </div>
       </div>
     </>
