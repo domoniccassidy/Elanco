@@ -544,6 +544,8 @@ body {
   overflow: auto;
 }
 .dog-message {
+  margin: auto;
+  width: 65%;
   margin-bottom: 0.5em;
   text-align: center;
   background-color: white;

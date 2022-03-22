@@ -18,7 +18,7 @@ const RebatePage = () => {
   const [file2, setFile2] = useState(null);
   const [products, setProducts] = useState([]);
   const [accountWindow, setAccountWindow] = useState("");
-  const [total, setTotal] = useState("");
+  const [dog, setDog] = useState("normal");
   const [isModal, setIsModal] = useState(false);
   const [isChoice, setIsChoice] = useState(false);
   const [isAi, setIsAi] = useState(false);
@@ -1410,16 +1410,32 @@ const RebatePage = () => {
             </form>
           </div>
         </div>
-        <div className="chat-circle">
-          <img
-            onClick={() => {
-              setShowChat(!showChat);
-              setDogMessage(false);
-            }}
-            src="https://assets-us-01.kc-usercontent.com/9965f6dc-5ed5-001e-1b5b-559ae5a1acec/baf81711-8523-478d-95b0-815bee4a1327/MixedColor_Dog_Normal.svg"
-            alt="A friendly dog to guide you througout your rebate journey"
-            className="dog-img"
-          />
+        <div
+          className="chat-circle"
+          onMouseOver={() => setDog("happy")}
+          onMouseLeave={() => setDog("normal")}
+        >
+          {dog === "normal" ? (
+            <img
+              onClick={() => {
+                setShowChat(!showChat);
+                setDogMessage(false);
+              }}
+              src="https://assets-us-01.kc-usercontent.com/9965f6dc-5ed5-001e-1b5b-559ae5a1acec/baf81711-8523-478d-95b0-815bee4a1327/MixedColor_Dog_Normal.svg"
+              alt="A friendly dog to guide you througout your rebate journey"
+              className="dog-img"
+            />
+          ) : (
+            <img
+              onClick={() => {
+                setShowChat(!showChat);
+                setDogMessage(false);
+              }}
+              src=" https://assets-us-01.kc-usercontent.com/9965f6dc-5ed5-001e-1b5b-559ae5a1acec/c9cb2a73-833f-46e0-877d-c0bb0913e51f/MixedColor_Dog_Love.svg"
+              alt="A friendly dog to guide you througout your rebate journey"
+              className="dog-img"
+            />
+          )}
         </div>
       </div>
     </>
