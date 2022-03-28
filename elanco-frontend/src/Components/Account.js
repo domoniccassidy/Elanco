@@ -1,9 +1,30 @@
 import React, { useState } from 'react'
+import { updateUser } from '../html'
 import "../accountStyle.css"
 
 const Account = () => {
     const [account,setAccount] = useState(JSON.parse(localStorage.getItem("account")))
-    
+    const [addingPet,setAddingPet] = useState(false);
+    const [fileName,setFileName] = useState("")
+    const[pet,setPet] = useState({
+        name:"",
+        file:"",
+        species:""
+    })
+    const onChangeDetails = (e) =>{
+        e.preventDefault();
+        localStorage.setItem("account",JSON.stringify(account))
+        updateUser(account);
+    }
+    const onAddPet = () =>{
+        setAccount({...account,pets:[...account.pets,pet]})
+        setPet({
+                name:"",
+                file:"",
+                species:""
+            })
+        setAddingPet(false)
+    }
 
   return (
     <section class="account-section">
@@ -95,38 +116,29 @@ const Account = () => {
                                 </div>
                             </div>
                         </div>
-                        <div class="account-card-address">
+                        <div class="account-card">
                             <div class="account-card-header-address">
                                 <h4>Your address</h4>
                                
                             </div>
-                            <div class="account-addresses-container">
-                                <div class="account-address" id="@addressDefaultCss">
-                                    <input type="hidden" asp-for="@address.Id" />
-                                    <div class="account-address-info">
-                                        <p>{account.address}</p>
-                                        <p>{account.city}</p>
-                                        <p>{account.state}</p>
-                                        <p>{account.zip}</p>
-                                    </div>
-                                    <div class="account-address-cta">
-                                        
-                                        <a class="account-pet-details-cta" asp-page="./EditAddress" asp-route-id="@address.Id" >
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                                            </svg>
-                                            <p>Edit</p>
-                                        </a>
-                                        <a class="account-pet-details-cta" asp-page="./DeleteAddress" asp-route-id="@address.Id">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                            </svg>
-                                            <p>Delete</p>
-                                        </a>
-                                    </div>
+                            <div className="account-card-field"><div class="form-field">
+                                    <label asp-for="Account.FirstName" class="form-label" >Street address</label>
+                                    <input asp-for="Account.FirstName" class="form-control"value = {account.address} onChange={(e) => setAccount({...account,address:e.target.value})} />
                                 </div>
-                            </div>
+                                <div class="form-field">
+                                    <label asp-for="Account.LastName" class="form-label">City</label>
+                                    <input asp-for="Account.LastName" class="form-control"  value = {account.city} onChange={(e) => setAccount({...account,city:e.target.value})}/>
+                                </div>
+                                <div class="form-field">
+                                    <label asp-for="Username" class="form-label" >State</label>
+                                    <input asp-for="Username" class="form-control"  value = {account.state} onChange={(e) => setAccount({...account,state:e.target.value})}/>
+                                </div>
+                                <div class="form-field">
+                                    <label asp-for="Input.PhoneNumber" class="form-label" >Zip</label>
+                                    <input asp-for="Input.PhoneNumber" class="form-control" value = {account.zip} onChange={(e) => setAccount({...account,zip:e.target.value})}/>
+                                    <span asp-validation-for="Input.PhoneNumber"></span>
+                                </div></div>
+                            
                         </div>
                         <div class="account-card">
                             <div class="account-card-header">
@@ -135,16 +147,16 @@ const Account = () => {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                                     </svg>
-                                    <p>Add</p>
+                                    <div onClick={() => {console.log("hello"); setAddingPet(true)}}>Add</div>
                                 </a>
                             </div>
                             <div class="account-pets-container">
                                 {account.pets.map((p)=>{
                                     return(<div class="account-pet">
                                     <input type="hidden" asp-for="@pet.Id" />
-                                    <img src="@file" width="140" height="120"/>
+                                    <img src={p.file} width="140" height="120"/>
                                     <div class="account-pet-details">
-                                        <h5>@pet.Name</h5>
+                                        <h5>{p.name}</h5>
                                         <a class="account-pet-details-cta" asp-page="./EditPet" asp-route-id="@pet.Id">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
                                             <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
@@ -161,13 +173,47 @@ const Account = () => {
                                     </div>
                                 </div>)
                                 })}
+                                {account.pets.length == 0 && <div>You currently have no pets added</div>}
+                                {addingPet && 
+                                <>
+                                <form className = "pet-add">
+                                <div class="form-field">
+                                    <label asp-for="Account.FirstName" class="form-label" >Pet name</label>
+                                    <input asp-for="Account.FirstName" class="form-control"value = {pet.name} onChange={(e) => setPet({...pet,name:e.target.value})} />
+                                </div>
+                                <div class="form-field">
+                                    <label asp-for="Account.LastName" class="form-label">Pet Species</label>
+                                    <input asp-for="Account.LastName" class="form-control"  value = {pet.species} onChange={(e) => setPet({...pet,species:e.target.value})}/>
+                                </div>
+
+                                <div style={{fontSize:"14px",marginBottom:"5px"}}>Pet Photo</div>
+                                <div class="pet-image-input" >
+                                    
+                                    <label asp-for="Account.LastName" class="form-label">{fileName}</label>
+                                    <input onChange={(e) =>{ 
+                                        setFileName(e.target.value); 
+                                        let reader = new FileReader();
+                                        reader.onloadend = () =>{
+                                            const base64String = reader.result
+                                            .replace(';base64:', '')
+                                      
+                                            setPet({...pet,file:base64String})
+
+                                        }
+                                        reader.readAsDataURL(e.target.files[0])
+                                        }} type="file" style={{opacity:"0"}} />
+                                </div>
+                                </form>                                
+                                <button className='add-pet-button' onClick={onAddPet}>Add pet</button>
+
+                                </>}
                                 
                             </div>
                         </div>
                     </div>
                     <div class="account-save">
                         <a asp-page="./Index">Cancel</a>
-                        <button id="update-profile-button" type="submit">Save changes</button>
+                        <button id="update-profile-button" onClick={onChangeDetails}>Save changes</button>
                     </div>
                 </form>
             </div>

@@ -54,4 +54,24 @@ export const signup = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+export const updateUser = async (req,res) =>{
+  const {_id, email, password, confirmPassword,address,forename,surname,zip,phone,city,state,pets } = req.body;
+    try {
+      const user = await UserProfile.findByIdAndUpdate(_id,{
+        forename,
+      surname,
+      address,
+      zip,
+      phone,
+      city,
+      state,
+      password,
+      email,
+      pets
+      })
+      res.status(200).json({user})
+    } catch (error) {
+      res.status(500).json({message:error.message})
+    }
+}
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import {Link} from "react-router-dom"
 import rebates from "../rebates.json";
 import Rebate from "./Rebate";
 import Rebate2 from "./Rebate2";
@@ -494,7 +495,12 @@ const RebatePage = () => {
       ]);
     }
   };
-
+useEffect(()=>{
+  if(localStorage.getItem("account")){
+    setUserForm(JSON.parse(localStorage.getItem("account")))
+    setIsSignedIn(true)
+  }
+},[])
   return (
     <>
       <section class="header-section">
@@ -519,7 +525,7 @@ const RebatePage = () => {
                 <a >Welcome, {userForm?.forename}</a>
                 <br />
                 <a onClick={onSignOut}>Log Out </a>
-                <a >My details</a>
+                <Link style={{textDecoration:"none",color:"white"}} to = "/account">My details</Link>
               </div>
             ) : (
               <div class="header-cta">

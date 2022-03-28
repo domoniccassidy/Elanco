@@ -1,5 +1,5 @@
 import express from "express";
-import { signup, logIn } from "../controllers/UserController.js";
+import { signup, logIn,updateUser} from "../controllers/UserController.js";
 const router = express.Router();
 
 router.post(
@@ -22,5 +22,11 @@ router.post(
   },
   signup
 );
-
+router.put("/update",(req, res, next) => {
+  console.log(
+    `Request from: ${req.originalUrl}, Request type: ${req.method}`
+  );
+  next();
+},
+updateUser)
 export default router
