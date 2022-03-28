@@ -28,6 +28,7 @@ const RebatePage = () => {
   const [showChat, setShowChat] = useState(false);
   const [dogMessage, setDogMessage] = useState(true);
   const [userMessage, setUserMessage] = useState("");
+  const [hideDog,setHideDog] = useState(false)
   const [messages, setMessages] = useState([
     {
       text: "Woof! Welcome to Elanco rebates!",
@@ -84,7 +85,7 @@ const RebatePage = () => {
   });
 
   const endpoint = "https://b7012116-psp-fr.cognitiveservices.azure.com/";
-  const apiKey = "3ead9492e5774bedaee4906d394f88ff  ";
+  const apiKey = "ad53f517375c4133a6e27a518b9c598e  ";
   const modelId = "b89dd708-cd7e-4424-9208-899d9c06d53e";
   const subscriptionKey = "9075ee73270c411e933d44e16100ae66";
   const chatEndpoint = "https://elano-bot.cognitiveservices.azure.com/";
@@ -156,6 +157,8 @@ const RebatePage = () => {
     e.preventDefault();
     signUp(accountForm).then((e) => {
       setUserForm(e.data.user);
+      localStorage.setItem("account",JSON.stringify(e.data.user))
+
       setAccountWindow("");
     });
     setIsSignedIn(true);
@@ -281,9 +284,13 @@ const RebatePage = () => {
     signIn(accountForm).then((e) => {
       console.log("hello");
       setUserForm(e.data.user);
+      localStorage.setItem("account",JSON.stringify(e.data.user))
+
       setAccountWindow("");
     });
     setIsSignedIn(true);
+    
+
   };
   const onSendMessage = (e) => {
     e.preventDefault();
@@ -509,7 +516,10 @@ const RebatePage = () => {
           <div class="header-right">
             {isSignedIn ? (
               <div class="header-cta">
-                <a onClick={onSignOut}>Log Out</a>
+                <a >Welcome, {userForm?.forename}</a>
+                <br />
+                <a onClick={onSignOut}>Log Out </a>
+                <a >My details</a>
               </div>
             ) : (
               <div class="header-cta">
@@ -1388,7 +1398,7 @@ const RebatePage = () => {
           </section>
         </div>
       </div>
-      <div className="chat-container">
+      <div className={`chat-container ${hideDog && "hide"} `} onDoubleClick={() =>setHideDog(true)}>
         <div className={`dog-message ${!dogMessage && "hide"}`}>
           Click me for help!
         </div>

@@ -40,6 +40,10 @@ email:{
 phone:{
     type:String,
     
+},
+pets:{
+  type:Array,
+  default:[]
 }
 });
 

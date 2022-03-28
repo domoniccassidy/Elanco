@@ -21,7 +21,7 @@ export const logIn = async (req, res) => {
   }
 };
 export const signup = async (req, res) => {
-  const { email, password, confirmPassword,address,forename,surname,zip,phone,city,state } = req.body;
+  const { email, password, confirmPassword,address,forename,surname,zip,phone,city,state,pets } = req.body;
   try {
     const existingUser = await UserProfile.findOne({ email });
 
@@ -46,6 +46,7 @@ export const signup = async (req, res) => {
       state,
       password:hashedPassword,
       email,
+      pets
     });
 
     res.status(200).json({ user });
