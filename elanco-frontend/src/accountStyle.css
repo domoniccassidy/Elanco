@@ -229,8 +229,8 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    background-color: var(--info-card);
-    color: var(--info-card-text);
+    background-color: var(--primary-light-blue);
+    color: white;
     padding: 10px 0;
     gap: 10px;
     border-radius: 5px;

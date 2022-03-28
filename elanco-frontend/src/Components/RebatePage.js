@@ -83,6 +83,7 @@ const RebatePage = () => {
     email: "",
     confirmEmail: "",
     pet: "",
+    pets:[]
   });
 
   const endpoint = "https://b7012116-psp-fr.cognitiveservices.azure.com/";
@@ -774,14 +775,14 @@ useEffect(()=>{
                   <label for="pet-name">
                     Pet Name <span>*</span>
                   </label>
-                  <input
-                    id="pet-name"
-                    type="text"
-                    value={userForm.pet}
-                    onChange={(e) =>
-                      setUserForm({ ...userForm, pet: e.target.value })
-                    }
-                  />
+                  <select name="pet-name" id="pet-name" onSelect={(e) => setUserForm({...userForm,pet:e.target.value})}>{
+                    
+                    accountForm?.pets.map((p) =>{
+                      console.log(p);
+                      <option value={p?.name}>{p?.name}</option>
+                    })
+                  }</select>
+                  
                   <p
                     className={`invalid-message ${
                       errors.petError !== "" && "show"
