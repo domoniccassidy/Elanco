@@ -487,6 +487,7 @@ const RebatePage = () => {
       ]);
     }
   };
+
   return (
     <>
       <section class="header-section">
