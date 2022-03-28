@@ -49,7 +49,7 @@ body {
 .header-user-cta {
   display: none;
 }
-.header-right{
+.header-right {
   font-family: "Montserrat";
   width: 20%;
 }
@@ -224,7 +224,8 @@ body {
   color: red;
 }
 
-.form-field input {
+.form-field input,
+select {
   padding: 10px 20px;
   border-radius: 5px;
   border: 2px solid var(--main-dark-blue);
@@ -481,7 +482,6 @@ body {
   display: none;
 }
 .chat-container {
-  
   width: 16em;
   bottom: 5%;
   position: fixed;

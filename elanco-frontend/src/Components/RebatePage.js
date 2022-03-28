@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 import rebates from "../rebates.json";
 import Rebate from "./Rebate";
 import Rebate2 from "./Rebate2";
@@ -13,6 +13,25 @@ import {
 const msRest = require("@azure/ms-rest-js");
 const qnamaker = require("@azure/cognitiveservices-qnamaker");
 const qnamaker_runtime = require("@azure/cognitiveservices-qnamaker-runtime");
+
+const originalErrors = {
+  forenameError: "",
+  surnameError: "",
+  addressError: "",
+  cityError: "",
+  stateError: "",
+  zipError: "",
+  phoneError: "",
+  emailError: "",
+  confirmError: "",
+  petError: "",
+  clinicError: "",
+  clinicAddressError: "",
+  clinicStateError: "",
+  clinicZipError: "",
+  loginEmailError: "",
+  loginPasswordError: "",
+};
 
 const RebatePage = () => {
   const [file, setFile] = useState(null);
@@ -29,29 +48,14 @@ const RebatePage = () => {
   const [showChat, setShowChat] = useState(false);
   const [dogMessage, setDogMessage] = useState(true);
   const [userMessage, setUserMessage] = useState("");
-  const [hideDog,setHideDog] = useState(false)
+  const [hideDog, setHideDog] = useState(false);
   const [messages, setMessages] = useState([
     {
       text: "Woof! Welcome to Elanco rebates!",
       sender: "bot",
     },
   ]);
-  const [errors, setErrors] = useState({
-    forenameError: "",
-    surnameError: "",
-    addressError: "",
-    cityError: "",
-    stateError: "",
-    zipError: "",
-    phoneError: "",
-    emailError: "",
-    confirmError: "",
-    petError: "",
-    clinicError: "",
-    clinicAddressError: "",
-    clinicStateError: "",
-    clinicZipError: "",
-  });
+  const [errors, setErrors] = useState(originalErrors);
   const [purchaseForm, setPurchaseForm] = useState({
     clinicName: "",
     clinicAddress: "",
@@ -78,12 +82,13 @@ const RebatePage = () => {
     city: "",
     state: "",
     confirmPassword: "",
+    password: "",
     zip: "",
     phone: "",
     email: "",
     confirmEmail: "",
     pet: "",
-    pets:[]
+    pets: [],
   });
 
   const endpoint = "https://b7012116-psp-fr.cognitiveservices.azure.com/";
@@ -159,11 +164,11 @@ const RebatePage = () => {
     e.preventDefault();
     signUp(accountForm).then((e) => {
       setUserForm(e.data.user);
-      localStorage.setItem("account",JSON.stringify(e.data.user))
+      localStorage.setItem("account", JSON.stringify(e.data.user));
 
       setAccountWindow("");
+      setIsSignedIn(true);
     });
-    setIsSignedIn(true);
   };
   const onSignOut = (e) => {
     e.preventDefault();
@@ -283,16 +288,45 @@ const RebatePage = () => {
 
   const onSignIn = (e) => {
     e.preventDefault();
-    signIn(accountForm).then((e) => {
-      console.log("hello");
-      setUserForm(e.data.user);
-      localStorage.setItem("account",JSON.stringify(e.data.user))
+    setErrors(originalErrors);
+    let newErrors = {
+      ...originalErrors,
+    };
+    signIn(accountForm)
+      .then((e) => {
+        console.log("hello");
+        setUserForm(e.data.user);
+        localStorage.setItem("account", JSON.stringify(e.data.user));
 
-      setAccountWindow("");
-    });
-    setIsSignedIn(true);
-    
+        setAccountWindow("");
+        setIsSignedIn(true);
+      })
+      .catch((e) => {
+        if (accountForm.email === "") {
+          newErrors = {
+            ...newErrors,
+            loginEmailError: "You must include your email",
+          };
+        } else if (e.response.data.message === "User not found") {
+          newErrors = {
+            ...newErrors,
+            loginEmailError: "Your email was not found",
+          };
+        }
 
+        if (!accountForm.password) {
+          newErrors = {
+            ...newErrors,
+            loginPasswordError: "You must include your password",
+          };
+        } else if (e.response.data.message === "Invalid Password") {
+          newErrors = {
+            ...newErrors,
+            loginPasswordError: "Your password is incorrect",
+          };
+        }
+        setErrors(newErrors);
+      });
   };
   const onSendMessage = (e) => {
     e.preventDefault();
@@ -496,12 +530,12 @@ const RebatePage = () => {
       ]);
     }
   };
-useEffect(()=>{
-  if(localStorage.getItem("account")){
-    setUserForm(JSON.parse(localStorage.getItem("account")))
-    setIsSignedIn(true)
-  }
-},[])
+  useEffect(() => {
+    if (localStorage.getItem("account")) {
+      setUserForm(JSON.parse(localStorage.getItem("account")));
+      setIsSignedIn(true);
+    }
+  }, []);
   return (
     <>
       <section class="header-section">
@@ -523,10 +557,15 @@ useEffect(()=>{
           <div class="header-right">
             {isSignedIn ? (
               <div class="header-cta">
-                <a >Welcome, {userForm?.forename}</a>
+                <a>Welcome, {userForm?.forename}</a>
                 <br />
                 <a onClick={onSignOut}>Log Out </a>
-                <Link style={{textDecoration:"none",color:"white"}} to = "/account">My details</Link>
+                <Link
+                  style={{ textDecoration: "none", color: "white" }}
+                  to="/account"
+                >
+                  My details
+                </Link>
               </div>
             ) : (
               <div class="header-cta">
@@ -775,14 +814,19 @@ useEffect(()=>{
                   <label for="pet-name">
                     Pet Name <span>*</span>
                   </label>
-                  <select name="pet-name" id="pet-name" onSelect={(e) => setUserForm({...userForm,pet:e.target.value})}>{
-                    
-                    accountForm?.pets.map((p) =>{
+                  <select
+                    name="pet-name"
+                    id="pet-name"
+                    onSelect={(e) =>
+                      setUserForm({ ...userForm, pet: e.target.value })
+                    }
+                  >
+                    {accountForm?.pets?.map((p) => {
                       console.log(p);
-                      <option value={p?.name}>{p?.name}</option>
-                    })
-                  }</select>
-                  
+                      <option value={p?.name}>{p?.name}</option>;
+                    })}
+                  </select>
+
                   <p
                     className={`invalid-message ${
                       errors.petError !== "" && "show"
@@ -1095,10 +1139,10 @@ useEffect(()=>{
                       />
                       <p
                         className={`invalid-message ${
-                          errors.emailError !== "" && "show"
+                          errors.loginEmailError !== "" && "show"
                         }`}
                       >
-                        {errors.emailError}
+                        {errors.loginEmailError}
                       </p>
                     </div>
                     <div class="form-field">
@@ -1118,10 +1162,10 @@ useEffect(()=>{
                       />
                       <p
                         className={`invalid-message ${
-                          errors.emailError !== "" && "show"
+                          errors.loginPasswordError !== "" && "show"
                         }`}
                       >
-                        {errors.emailError}
+                        {errors.loginPasswordError}
                       </p>
                     </div>
                     <div
@@ -1405,7 +1449,10 @@ useEffect(()=>{
           </section>
         </div>
       </div>
-      <div className={`chat-container ${hideDog && "hide"} `} onDoubleClick={() =>setHideDog(true)}>
+      <div
+        className={`chat-container ${hideDog && "hide"} `}
+        onDoubleClick={() => setHideDog(true)}
+      >
         <div className={`dog-message ${!dogMessage && "hide"}`}>
           Click me for help!
         </div>
