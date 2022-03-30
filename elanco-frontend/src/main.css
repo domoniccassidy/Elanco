@@ -620,6 +620,9 @@ h3{
 }
 
 .success-button{
+  margin: 1rem;
+  min-width: 300px;
+  width: 50%;
   transition: .3s ease;
     vertical-align: middle;
     padding-left: 1.5rem;

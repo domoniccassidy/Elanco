@@ -11,7 +11,9 @@ const Rebate = (rebate) => {
   }
 
   const subRebate = rebate.rebate;
+  
   return (
+  
     <>
       <div class="rebate-products">
         <div class="rebate-product">
@@ -26,13 +28,18 @@ const Rebate = (rebate) => {
             <h5>Is Selected</h5>
 
             {subRebate.rebateValue.map((val, key) => {
+               
               return (
                 <>
                   <p className>{val[0]}</p>
                   <p className>${val[1]}</p>
                   <input
                     type="checkbox"
-                    onChange={() => setSelectedValue(key)}
+                    onChange={() => {
+                      let tempProducts = rebate.products;
+                      tempProducts[rebate.index].chosenProduct = key;
+                      console.log(tempProducts[rebate.index]);
+                      setSelectedValue(key)}}
                     checked={selectedValue === key}
                   />
                 </>

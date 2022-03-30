@@ -1,18 +1,32 @@
-import {invoiceModelCall,customModelCall} from "./TestingFunctions.js"
+import {invoiceModelCall,customModelCall,layoutModelCall} from "./TestingFunctions.js"
+import { signIn } from "./src/html.js";
 
-function testAsync(callback){
+function testAzure(callback){
     callback().then(e =>{
       if(Object.keys(e).length >0){
-        console.log("The test was a success");
+        console.log(callback.name + " was a success");
       }
       else{
-        console.log("The test was a failure");
+        console.log(callback.name + " was a failure");
       }
     }).catch(e =>{
-      console.log("The test threw an exception");
+      console.log(callback.name+" threw an exception");
     })
     
-  }
-  
-testAsync(invoiceModelCall)
-testAsync(customModelCall)
+}
+
+function testApi(callback){
+  callback({email:"hello",password:"hello"})
+  .then(e =>{
+    console.log("hello");
+  })
+  .catch(e =>{
+    console.log(e);
+  })
+}
+
+testAzure(invoiceModelCall)
+testAzure(customModelCall)
+testAzure(layoutModelCall)
+
+testApi(signIn)

@@ -52,3 +52,16 @@ export const customModelCall = async () => {
  
   return forms[0].fields;
 };
+export const layoutModelCall = async () => {
+  const client = new FormRecognizerClient(
+    endpoint,
+    new AzureKeyCredential(apiKey)
+  );
+  const poller = await client.beginRecognizeContent(file2, {
+    
+  });
+  const forms = await poller.pollUntilDone();
+
+ 
+  return forms[0].fields;
+};
