@@ -37,16 +37,19 @@ export const signup = async (req, res) => {
     state,
     pets,
   } = req.body;
+  console.log(req.body);
   try {
     const existingUser = await UserProfile.findOne({ email });
 
     if (existingUser) {
+      return res.status(400).json({ message: "This email is already taken!" });
+    }
+    if (password.length < 8) {
       return res
         .status(400)
-        .json({ message: "This username is already taken!" });
-    }
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: "The passwords do not match!" });
+        .json({ message: "The password must be at least 8 characters long" });
+    } else if (password !== confirmPassword) {
+      return res.status(400).json({ message: "The passwords do not match" });
     }
 
     const hashedPassword = bcrypt.hashSync(password, 10);
@@ -65,7 +68,7 @@ export const signup = async (req, res) => {
 
     res.status(200).json({ user });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error });
   }
 };
 export const updateUser = async (req, res) => {
@@ -73,7 +76,7 @@ export const updateUser = async (req, res) => {
     _id,
     email,
     password,
-    
+
     address,
     forename,
     surname,
@@ -93,7 +96,7 @@ export const updateUser = async (req, res) => {
       phone,
       city,
       state,
-      password:hashedPassword,
+      password: hashedPassword,
       email,
       pets,
     });

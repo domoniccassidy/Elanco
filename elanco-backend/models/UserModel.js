@@ -3,11 +3,9 @@ import bcrypt from "bcryptjs";
 const userSchema = new mongoose.Schema({
   forename: {
     type: String,
-    required: true,
   },
   surname: {
     type: String,
-    required: true,
   },
   password: {
     type: String,
@@ -19,36 +17,24 @@ const userSchema = new mongoose.Schema({
   },
   address: {
     type: String,
-    required: true,
   },
   city: {
     type: String,
-    required: true,
   },
   state: {
     type: String,
-    required: true,
   },
-  zip:{
-    type:String,
-    required:true
-},
-email:{
-    type:String,
-    required:true
-},
-phone:{
-    type:String,
-    
-},
-pets:{
-  type:Array,
-  default:[]
-}
-});
+  zip: {
+    type: String,
+  },
 
-userSchema.methods.comparePassword = function (original, callback) {
-  return callback(null, bcrypt.compareSync(this.password, 10));
-};
+  phone: {
+    type: String,
+  },
+  pets: {
+    type: Array,
+    default: [],
+  },
+});
 
 export default mongoose.model("UserProfile", userSchema);
