@@ -243,6 +243,7 @@ select {
 }
 
 @media only screen and (min-width: 450px) {
+  
   .rebate-form-container {
     display: grid;
     grid-template-columns: 1fr;
@@ -553,4 +554,85 @@ select {
   background-color: white;
   box-shadow: 0 3px 8px 0 rgb(0 0 0 / 45%);
   border-radius: 9999px;
+}
+.modal-success{
+  
+  position: absolute;
+  inset: 50% auto auto 50%;
+  border: none;
+  background: transparent;
+  overflow: auto;
+  border-radius: 0px;
+  outline: none;
+  padding: 5rem 5%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  max-height: 100vh;
+  width: 100%;
+}
+.modal-top-row{
+  align-items: center;
+  text-align: center;
+  display: flex;
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  flex-direction: column;
+  background-color: #fff;
+  color: var(--main-dark-blue);
+}
+.centre{
+  border-radius: 1.5rem;
+  width: 50%;
+  margin:auto;
+  min-width: 350px;
+}
+.success-dog{
+  display: flex;
+  flex-direction: column;
+  margin-top: -4rem;
+  margin-bottom: 1rem;
+  align-items: center;
+ 
+
+
+}
+.extra-dog{
+  overflow: hidden;
+  align-items: center;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  height: 120px;
+  width: 120px;
+  border-width: 7px;
+  background-color: #fff;
+  box-shadow: 0 3px 8px 0 rgb(0 0 0 / 45%);
+}
+.modal-second-row{
+  padding: 2rem;
+  background-color: rgba(253,252,239,1);
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+}
+h3{
+  text-align: center;
+  color: var(--main-dark-blue);
+}
+
+.success-button{
+  transition: .3s ease;
+    vertical-align: middle;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    align-items: center;
+    text-align: center;
+    color: #033357;
+    border: 1px solid rgba(3,51,87,1);
+    cursor: pointer;
+    font-weight: 700;
+}
+.success-button:hover{
+  color: white;
+  background-color: #033357;
 }

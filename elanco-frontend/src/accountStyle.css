@@ -98,7 +98,9 @@ body {
     color: var(--primary-dark-blue);
     gap: 30px;
 }
-
+.selected{
+    background-color: var(--info-card);
+}
 .account-nav a:hover, .account-nav form > button:hover {
     background-color: var(--info-card);
 }

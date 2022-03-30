@@ -73,7 +73,7 @@ export const updateUser = async (req, res) => {
     _id,
     email,
     password,
-    confirmPassword,
+    
     address,
     forename,
     surname,
@@ -83,6 +83,7 @@ export const updateUser = async (req, res) => {
     state,
     pets,
   } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   try {
     const user = await UserProfile.findByIdAndUpdate(_id, {
       forename,
@@ -92,7 +93,7 @@ export const updateUser = async (req, res) => {
       phone,
       city,
       state,
-      password,
+      password:hashedPassword,
       email,
       pets,
     });
