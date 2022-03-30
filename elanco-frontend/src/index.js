@@ -12,6 +12,10 @@ ReactDOM.render(
       <Route exact path="/" element={<RebatePage />}></Route>
       <Route path="/account" element={<Account />}></Route>
       <Route path="/auth" element={<Authentication />}></Route>
+      <Route
+        path="/auth/signup"
+        element={<Authentication originalMode={"register"} />}
+      ></Route>
     </Routes>
   </BrowserRouter>,
   document.getElementById("root")
