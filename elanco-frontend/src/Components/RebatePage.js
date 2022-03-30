@@ -31,7 +31,28 @@ const originalErrors = {
   clinicZipError: "",
   loginEmailError: "",
   loginPasswordError: "",
+  signUpForenameError:"",
+  signUpSurnameError:"",
+  signUpEmailError:"",
+  signUpConfirmEmailError:"",
+  signUpPasswordError:"",
+  signUpConfirmPasswordError:"",
+  signUpAddressError:"",
+  signUpCityError:"",
+  signUpStateError:"",
+  signUpZipError:""
 };
+const originalUserForm = {forename: "",
+surname: "",
+address: "",
+city: "",
+state: "",
+zip: "",
+phone: "",
+email: "",
+confirmEmail: "",
+pet: "",
+pets:[] }
 
 const RebatePage = () => {
   const [file, setFile] = useState(null);
@@ -63,18 +84,7 @@ const RebatePage = () => {
     clinicState: "",
     clinicZip: "",
   });
-  const [userForm, setUserForm] = useState({
-    forename: "",
-    surname: "",
-    address: "",
-    city: "",
-    state: "",
-    zip: "",
-    phone: "",
-    email: "",
-    confirmEmail: "",
-    pet: "",
-  });
+  const [userForm, setUserForm] = useState(originalUserForm);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [accountForm, setAccountForm] = useState({
     forename: "",
@@ -121,73 +131,76 @@ const RebatePage = () => {
     };
     e.preventDefault();
     if (userForm.forename == "") {
-      number +=1;
+      number += 1;
       newErrors.forenameError = "You must include a first name";
     }
     if (userForm.surname == "") {
-      number +=1;
+      number += 1;
       newErrors.surnameError = "You must include a last name";
     }
     if (userForm.address == "") {
-      number +=1;
+      number += 1;
       newErrors.addressError = "You must include an address";
     }
     if (userForm.city == "") {
-      number +=1;
+      number += 1;
       newErrors.cityError = "You must include a city";
     }
     if (userForm.state == "") {
-      number +=1;
+      number += 1;
       newErrors.stateError = "You must include a state";
     }
     if (userForm.email == "") {
-      number +=1;
+      number += 1;
       newErrors.emailError = "You must include an email";
     }
     if (userForm.zip == "") {
-      number +=1;
+      number += 1;
       newErrors.zipError = "You must include a zip code";
     }
     // if (!isNaN(userForm.phone)) {
     //   newErrors.phoneError = "You must include a valid phone number";
     // }
-    if (userForm.pet == "") {
+    if (userForm.pet === "") {
       newErrors.petError = "You must select a pet";
-      number +=1;
+      number += 1;
     }
     if (purchaseForm.clinicAddress == "") {
-      number +=1;
+      number += 1;
       newErrors.clinicAddressError =
         "You must include the address of your clinic";
     }
     if (purchaseForm.clinicName == "") {
-      number +=1;
+      number += 1;
       newErrors.clinicError = "You must include the name of your clinic";
     }
     if (purchaseForm.clinicState == "") {
-      number +=1;
+      number += 1;
       newErrors.clinicStateError = "You must include the state of your clinic";
     }
     if (purchaseForm.clinicZip == "") {
-      number +=1;
+      number += 1;
       newErrors.clinicZipError = "You must include the zip code of your clinic";
     }
-    if(number == 0){
-      
-      setSuccessWindow("open")
+    if (number == 0) {
+      setSuccessWindow("open");
       setPurchaseForm({
         clinicName: "",
         clinicAddress: "",
         clinicState: "",
         clinicZip: "",
-      })
-      setFile(null)
+      });
+      setFile(null);
       setFile2(null);
-      setProducts([])
+      setProducts([]);
     }
     setErrors(newErrors);
   };
   const onSignUp = (e) => {
+    let number = 0;
+    const newErrors = {
+      ...originalErrors,
+    };
     e.preventDefault();
     signUp(accountForm).then((e) => {
       setUserForm(e.data.user);
@@ -195,6 +208,16 @@ const RebatePage = () => {
 
       setAccountWindow("");
       setIsSignedIn(true);
+    }).catch(e =>{
+      if(accountForm.forename === ""){
+        number += 1;
+        newErrors.signUpForenameError = "You must include a first name";
+      }
+      if(accountForm.surname === ""){
+        number += 1;
+        newErrors.signUpSurnameError = "You must include a first name";
+      }
+      setErrors(newErrors);
     });
   };
   const onSignOut = (e) => {
@@ -212,36 +235,12 @@ const RebatePage = () => {
       confirmEmail: "",
       pet: "",
     });
-    setUserForm({
-      forename: "",
-      surname: "",
-      address: "",
-      city: "",
-      state: "",
-      confirmPassword: "",
-      zip: "",
-      phone: "",
-      email: "",
-      confirmEmail: "",
-      pet: "",
-    });
+    setUserForm(originalUserForm);
     setIsSignedIn(false);
     localStorage.removeItem("account");
   };
-
   const onReset = () => {
-    setUserForm({
-      forename: "",
-      surname: "",
-      address: "",
-      city: "",
-      state: "",
-      zip: "",
-      phone: "",
-      email: "",
-      confirmEmail: "",
-      pet: "",
-    });
+    setUserForm(originalUserForm);
     setPurchaseForm({
       clinicName: "",
       clinicAddress: "",
@@ -251,22 +250,7 @@ const RebatePage = () => {
     setFile(null);
     setProducts([]);
     setFile2(null);
-    setErrors({
-      forenameError: "",
-      surnameError: "",
-      addressError: "",
-      cityError: "",
-      stateError: "",
-      zipError: "",
-      phoneError: "",
-      emailError: "",
-      confirmError: "",
-      petError: "",
-      clinicError: "",
-      clinicAddressError: "",
-      clinicStateError: "",
-      clinicZipError: "",
-    });
+    setErrors(originalErrors);
   };
   const changeFile = (e) => {
     setIsAi(true);
@@ -415,7 +399,7 @@ const RebatePage = () => {
 
     setIsAi(false);
   };
-   const analyzeCustom = async () => {
+  const analyzeCustom = async () => {
     setPurchaseForm({
       clinicName: "",
       clinicAddress: "",
@@ -561,11 +545,10 @@ const RebatePage = () => {
   };
   useEffect(() => {
     if (localStorage.getItem("account")) {
-      let tempForm = JSON.parse(localStorage.getItem("account"))
-      tempForm = {...tempForm, pet:""}
+      let tempForm = JSON.parse(localStorage.getItem("account"));
+      tempForm = { ...tempForm, pet: "" };
       setUserForm(tempForm);
       setIsSignedIn(true);
-
     }
   }, []);
   return (
@@ -836,9 +819,6 @@ const RebatePage = () => {
                   </p>
                 </div>
               </div>
-            </div>
-
-            <div className="rebate-form-and-purchase-details">
               <div class="form-details">
                 <h3>Pet Information</h3>
                 <p>
@@ -846,28 +826,26 @@ const RebatePage = () => {
                   just put one of your pet's name.
                 </p>
                 <div class="form-field">
-                  <label for="pet-name">
-                    Pet Name <span>*</span>
-                  </label>
-                  <select
-                    name="pet-name"
-                    id="pet-name"
-                    onChange={(e) =>{
-                     
-                      setUserForm({ ...userForm, pet: e.target.value })}
-                    }
-                  >
-                    <option>No pet selected</option>
-                    {userForm?.pets?.map((p,index) => {
-                        
-                      return <option value={p?.name}>{p?.name}</option>;
-                    })}
-                    
-                    
-                      
-                      
-                     
-                  </select>
+                <div class="form-field-pets-container">
+                  {userForm?.pets?.map((p,index) => {
+                    return (
+                      <div class={`form-field-pet ${userForm.pet === index && "pet-selected"}`} id="@GetPetSelectedCss(pet)" onClick={() => setUserForm({...userForm,pet:index})}>
+                        <img
+                          src={p.file}
+                          alt={p.name}
+                        />
+                      </div>
+                    );
+                  })}
+                  </div>
+                  {userForm?.pets?.length === 0 && (
+                    <div class="form-field">
+                      <label for="clinic-name">
+                        Pet Name <span>*</span>
+                      </label>
+                      <input value = {userForm.pet} onChange= {(e) => setUserForm({...userForm,pet:e.target.value})} type="text" />
+                    </div>
+                  )}
 
                   <p
                     className={`invalid-message ${
@@ -878,6 +856,10 @@ const RebatePage = () => {
                   </p>
                 </div>
               </div>
+            </div>
+
+            <div className="rebate-form-and-purchase-details">
+              
               <div class="form-details">
                 <h3>Purchase Details</h3>
                 <p>
@@ -1158,9 +1140,8 @@ const RebatePage = () => {
         >
           <section class="rebate-form-section">
             {accountWindow === "login" ? (
-              
               <div>
-                <h2 style={{textAlign:"center"}}> Log in</h2>
+                <h2 style={{ textAlign: "center" }}> Log in</h2>
                 <form onSubmit={onSignIn}>
                   <div className="account-container">
                     <div class="form-field">
@@ -1221,7 +1202,7 @@ const RebatePage = () => {
               </div>
             ) : (
               <div>
-                <h2 style={{textAlign:"center"}}> Sign up</h2>
+                <h2 style={{ textAlign: "center" }}> Sign up</h2>
                 <form onSubmit={onSignUp}>
                   <div className="account-container">
                     <div class="form-field">
@@ -1241,10 +1222,10 @@ const RebatePage = () => {
                       />
                       <p
                         className={`invalid-message ${
-                          errors.forenameError !== "" && "show"
+                          errors.signUpForenameError !== "" && "show"
                         }`}
                       >
-                        {errors.forenameError}
+                        {errors.signUpForenameError}
                       </p>
                     </div>
                     <div class="form-field">
@@ -1509,12 +1490,22 @@ const RebatePage = () => {
               </h2>
             </div>
             <div className="modal-second-row">
-              <h3 style={{    marginBottom: "1rem"}}>
+              <h3 style={{ marginBottom: "1rem" }}>
                 We've received and are validating your rebate submission. Please
                 monitor your email for rebate status updates.
               </h3>
-              <p style={{textAlign:"center",color:"#033357"}}>Set up a pet medication reminder. We'll help make sure your pet never misses a dose. It's quick, easy and rewarding.</p>
-              <div style={{textAlign:"center",marginTop:"2rem"}}><a  onClick = {() => setSuccessWindow("")}className = "success-button">Claim another rebate</a></div>
+              <p style={{ textAlign: "center", color: "#033357" }}>
+                Set up a pet medication reminder. We'll help make sure your pet
+                never misses a dose. It's quick, easy and rewarding.
+              </p>
+              <div style={{ textAlign: "center", marginTop: "2rem" }}>
+                <a
+                  onClick={() => setSuccessWindow("")}
+                  className="success-button"
+                >
+                  Claim another rebate
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -1578,4 +1569,3 @@ const RebatePage = () => {
 };
 
 export default RebatePage;
-
