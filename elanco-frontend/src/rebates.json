@@ -8,7 +8,9 @@
       "offerCode": "INT2021",
       "startDate":"01/01/21",
       "endDate":"12/31/21",
-      "deadline":"03/01/22"
+      "deadline":"03/01/22",
+      "amount":0,
+      "chosenProduct":0
     },{
       "productName": "Galliprant",
       "productNames":["90 Galliprant 60mg*","Galliprant"],

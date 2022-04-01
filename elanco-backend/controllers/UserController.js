@@ -4,20 +4,26 @@ import bcrypt from "bcryptjs";
 
 export const logIn = async (req, res) => {
   let { email, password } = req.body;
+  console.log(password);
   try {
     const existingUser = await UserProfile.findOne({ email });
 
     if (!existingUser) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    const isPasswordCorrect = bcrypt.compareSync(
-      password,
-      existingUser.password
-    );
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid Password" });
-    }
+    
+    
+  
+      const isPasswordCorrect =  bcrypt.compareSync(
+        password,
+        existingUser.password,
+      );
+      if (!isPasswordCorrect) {
+        return res.status(400).json({ message: "Invalid Password" });
+      } 
+   
+    
+    
     res.status(200).json({ user: existingUser });
   } catch (error) {
     res.status(500).json({ message: error });

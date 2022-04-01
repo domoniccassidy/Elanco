@@ -16,25 +16,10 @@ export async function invoiceModelCall  (){
         new AzureKeyCredential(apiKey)
       );
       const poller = await client.beginRecognizeInvoices(fs.createReadStream("./src/TestReciepts/Receipt.png"), {
-        onProgress: (state) => {
-          console.log(`status: ${state.status}`);
-        },
+        
       });
       const forms = await poller.pollUntilDone();
     
-      for (const form of forms || []) {
-       
-        for (const fieldName in form.fields) {
-          // each field is of type FormField
-          const field = form.fields[fieldName];
-          if (Array.isArray(field.value)) {
-            field.value.forEach((element) => {
-              
-             
-            });
-          }
-        }
-      }
       return forms[0].fields;
 };
     

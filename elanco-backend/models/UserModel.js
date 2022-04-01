@@ -3,9 +3,11 @@ import bcrypt from "bcryptjs";
 const userSchema = new mongoose.Schema({
   forename: {
     type: String,
+    default:"",
   },
   surname: {
     type: String,
+    default:""
   },
   password: {
     type: String,
@@ -16,20 +18,20 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   address: {
-    type: String,
+    type: String,default:""
   },
   city: {
-    type: String,
+    type: String,default:""
   },
   state: {
-    type: String,
+    type: String,default:""
   },
   zip: {
-    type: String,
+    type: String,default:""
   },
 
   phone: {
-    type: String,
+    type: String,default:""
   },
   pets: {
     type: Array,

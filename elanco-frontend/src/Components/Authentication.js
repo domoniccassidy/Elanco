@@ -11,7 +11,7 @@ const originalRegisterForm = {
 };
 
 const originalSignInForm = {
-  email: "",
+  email: "",  
   password: "",
 };
 
@@ -178,23 +178,7 @@ const SignupLogin = ({ originalMode }) => {
                 </p>
                 <span class="validation-message"></span>
               </div>
-              <div class="form-field">
-                <label class="form-label">
-                  First name <span>*</span>
-                </label>
-                <input
-                  type="password"
-                  class="form-control"
-                  value={register.forename}
-                  onChange={(e) =>
-                    setRegister({
-                      ...register,
-                      forename: e.target.value,
-                    })
-                  }
-                />
-                <span class="validation-message"></span>
-              </div>
+              
               <div class="form-submit-btn-container">
                 <button id="auth-submit" type="submit">
                   Register

@@ -2,6 +2,7 @@
   "name": "elanco-frontend",
   "version": "0.1.0",
   "private": true,
+ 
   "dependencies": {
     "@azure/ai-form-recognizer": "^3.2.0",
     "@azure/cognitiveservices-qnamaker": "^3.2.0",

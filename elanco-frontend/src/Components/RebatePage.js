@@ -43,6 +43,9 @@ const originalErrors = {
   signUpCityError: "",
   signUpStateError: "",
   signUpZipError: "",
+  invoiceError:"",
+  productError:"",
+  rebateError:"",
 };
 const originalUserForm = {
   forename: "",
@@ -58,12 +61,20 @@ const originalUserForm = {
   pets: [],
 };
 
+const originalPurchaseForm = {
+  clinicName: "",
+  clinicAddress: "",
+  clinicState: "",
+  clinicZip: "",
+};
+
 const RebatePage = () => {
   const [file, setFile] = useState(null);
   const [file2, setFile2] = useState(null);
   const [products, setProducts] = useState([]);
-  const [accountWindow, setAccountWindow] = useState("");
-  const [successWindow, setSuccessWindow] = useState("t");
+  const [successWindow, setSuccessWindow] = useState("");
+  const [invoiceWindow, setInvoiceWindow] = useState("");
+  const [selectingRebate, setSelectingRebate] = useState(false);
   const [dog, setDog] = useState("normal");
   const [isModal, setIsModal] = useState(false);
   const [isChoice, setIsChoice] = useState(false);
@@ -71,6 +82,7 @@ const RebatePage = () => {
   const [isCustom, setIsCustom] = useState(false);
   const [isLayout, setIsLayout] = useState(false);
   const [noRebates, setNoRebates] = useState(false);
+  const [noProducts,setNoProducts] = useState(false)
   const [showChat, setShowChat] = useState(false);
   const [dogMessage, setDogMessage] = useState(true);
   const [userMessage, setUserMessage] = useState("");
@@ -82,12 +94,7 @@ const RebatePage = () => {
     },
   ]);
   const [errors, setErrors] = useState(originalErrors);
-  const [purchaseForm, setPurchaseForm] = useState({
-    clinicName: "",
-    clinicAddress: "",
-    clinicState: "",
-    clinicZip: "",
-  });
+  const [purchaseForm, setPurchaseForm] = useState(originalPurchaseForm);
   const [userForm, setUserForm] = useState(originalUserForm);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [accountForm, setAccountForm] = useState({
@@ -186,37 +193,26 @@ const RebatePage = () => {
       number += 1;
       newErrors.clinicZipError = "You must include the zip code of your clinic";
     }
+    if (products.length === 0) {
+      newErrors.rebateError = "You must claim at least one rebate"
+      number++;
+    }
+    if (file == null) {
+      newErrors.invoiceError = "You must upload a receipt or invoice"
+      number++;
+    }
+    products.forEach(e =>{
+      if(e?.chosenProduct === undefined){
+        number++
+        newErrors.productError = "You must select a type of product"
+      }
+    })
     if (number == 0) {
       setSuccessWindow("open");
     }
     setErrors(newErrors);
   };
-  const onSignUp = (e) => {
-    let number = 0;
-    const newErrors = {
-      ...originalErrors,
-    };
-    e.preventDefault();
-    signUp(accountForm)
-      .then((e) => {
-        setUserForm(e.data.user);
-        localStorage.setItem("account", JSON.stringify(e.data.user));
 
-        setAccountWindow("");
-        setIsSignedIn(true);
-      })
-      .catch((e) => {
-        if (accountForm.forename === "") {
-          number += 1;
-          newErrors.signUpForenameError = "You must include a first name";
-        }
-        if (accountForm.surname === "") {
-          number += 1;
-          newErrors.signUpSurnameError = "You must include a first name";
-        }
-        setErrors(newErrors);
-      });
-  };
   const onSignOut = (e) => {
     e.preventDefault();
     setAccountForm({
@@ -237,7 +233,6 @@ const RebatePage = () => {
     localStorage.removeItem("account");
   };
   const onReset = () => {
-    setUserForm(originalUserForm);
     setPurchaseForm({
       clinicName: "",
       clinicAddress: "",
@@ -280,7 +275,7 @@ const RebatePage = () => {
         clinicZipError: "",
       });
       analyze().then(() => {
-        console.log(products);
+
         if (products.length < 1) {
           console.log("hello");
           setNoRebates(true);
@@ -291,52 +286,17 @@ const RebatePage = () => {
   }, [file]);
   useEffect(() => {
     if (file2) {
-      analyzeForm();
+      analyzeForm().then((e) => {
+        if (products.length > 0) {
+          setSelectingRebate(false);
+        }
+        else{
+          setNoProducts(true)
+        }
+      });
     }
   }, [file2]);
 
-  const onSignIn = (e) => {
-    e.preventDefault();
-    setErrors(originalErrors);
-    let newErrors = {
-      ...originalErrors,
-    };
-    signIn(accountForm)
-      .then((e) => {
-        console.log("hello");
-        setUserForm(e.data.user);
-        localStorage.setItem("account", JSON.stringify(e.data.user));
-
-        setAccountWindow("");
-        setIsSignedIn(true);
-      })
-      .catch((e) => {
-        if (accountForm.email === "") {
-          newErrors = {
-            ...newErrors,
-            loginEmailError: "You must include your email",
-          };
-        } else if (e.response.data.message === "User not found") {
-          newErrors = {
-            ...newErrors,
-            loginEmailError: "Your email was not found",
-          };
-        }
-
-        if (!accountForm.password) {
-          newErrors = {
-            ...newErrors,
-            loginPasswordError: "You must include your password",
-          };
-        } else if (e.response.data.message === "Invalid Password") {
-          newErrors = {
-            ...newErrors,
-            loginPasswordError: "Your password is incorrect",
-          };
-        }
-        setErrors(newErrors);
-      });
-  };
   const onGeneratePDF = () => {
     const document = new jsPDF();
     const pdfLogo =
@@ -344,28 +304,55 @@ const RebatePage = () => {
 
     let totalRebate = parseInt(0);
     document.addImage(pdfLogo, "PNG", 0, -0, 50, 25);
-    document.setFont("Merriweather");
+    document.line(0, 26, 300, 26);
+    console.log(document.getFontList());
+    document.setFont("courier");
     document.setFontSize(44);
-    document.text(105, 45, "Rebate Summary", {
+    document.text(75, 15, "Rebate Summary", {});
+    document.setFontSize(26);
+    document.text(100, 35, "Purchase Details", {
       baseline: "middle",
       align: "center",
     });
     document.setFontSize(18);
-    document.text(0, 70, `Pet Name: ${userForm.pets[userForm.pet].name}`, {
+    console.log(isNaN(parseInt(userForm.pet)));
+    if (isNaN(parseInt(userForm.pet))) {
+      document.text(0, 60 - 5, `Pet Name: ${userForm.pet}`, {
+        align: "left",
+      });
+    } else {
+      document.text(
+        0,
+        60 - 5,
+        `Pet Name: ${userForm.pets[userForm.pet].name}`,
+        {
+          align: "left",
+        }
+      );
+    }
+
+    document.text(0, 70 - 5, `Clinic: ${purchaseForm.clinicName}`, {
       align: "left",
     });
-    document.text(0, 80, `Clinic: ${purchaseForm.clinicName}`, {
+    document.text(0, 80 - 5, `Address: ${purchaseForm.clinicAddress}`, {
       align: "left",
     });
-    document.text(0, 90, `Address: ${purchaseForm.clinicAddress}`, {
+    document.text(0, 90 - 5, `State: ${purchaseForm.clinicState}`, {
       align: "left",
     });
-    document.text(0, 100, `State: ${purchaseForm.clinicState}`, {
+    document.text(0, 100 - 5, `Zip: ${purchaseForm.clinicZip}`, {
       align: "left",
     });
-    document.text(0, 110, `Zip: ${purchaseForm.clinicZip}`, { align: "left" });
+    document.line(0, 110 - 5, 300, 110 - 5);
+    document.setFontSize(26);
+    document.text(100, 110, "Product Details", {
+      baseline: "middle",
+      align: "center",
+    });
+    document.setFontSize(18);
+    document.text(0, 130 - 5, `Rebates Redeemed: `, { align: "left" });
     document.autoTable({
-      startY: 110,
+      startY: 135 - 5,
       head: [["Product Name", "Product Classification", "Rebate Value"]],
       body: products.map((e) => {
         totalRebate += parseInt(e.rebateValue[e.chosenProduct][1]);
@@ -379,7 +366,7 @@ const RebatePage = () => {
     });
     document.text(
       0,
-      130 + products.length * 10,
+      160 + products.length * 10 - 10,
       `Total Rebate Value: $${totalRebate}`,
       { align: "left" }
     );
@@ -392,12 +379,7 @@ const RebatePage = () => {
       runtimeClient,
       "78ee9c6d-c2e8-4f6c-8e63-8dd6e2740e76",
       userMessage
-    ).then(
-      () =>
-        (document.getElementsByClassName(
-          "message-container"
-        )[0].scrollTop = 10000)
-    );
+    ).then();
 
     setUserMessage("");
   };
@@ -542,6 +524,7 @@ const RebatePage = () => {
     return forms;
   };
   const analyzeForm = async () => {
+    let tempProducts = [...products];
     const client = new FormRecognizerClient(
       endpoint,
       new AzureKeyCredential(apiKey)
@@ -558,13 +541,13 @@ const RebatePage = () => {
         const lineText2 = line.text.replace(/[^a-zA-Z ]/g, "");
         console.log(lineText2);
 
-        rebates.rebates.map((rebate) => {
+        rebates.rebates.map((rebate, key) => {
           if (rebate.productNames?.includes(lineText2)) {
-            setProducts([...products, { ...rebate, amount: 1 }]);
-            products.push({
-              ...rebate,
-              amount: 1,
-            });
+            tempProducts = [
+              ...tempProducts,
+              { ...rebate, amount: key, chosenProduct: 0 },
+            ];
+            setProducts(tempProducts);
           }
         });
       }
@@ -583,11 +566,21 @@ const RebatePage = () => {
       setMessages([...tempMessages, { text: "Woof! Woof!", sender: "bot" }]);
     } else {
       let tempMessage = requestQuery.answers[0].answer.split("£");
-      tempMessage.forEach((e) => {
-        tempMessages = [...tempMessages, { text: e, sender: "bot" }];
+      var promise = Promise.resolve();
+      tempMessage.forEach(function (e) {
+        promise = promise.then(function () {
+          tempMessages = [...tempMessages, { text: e, sender: "bot" }];
+          setMessages(tempMessages);
+          document.getElementsByClassName(
+            "message-container"
+          )[0].scrollTop = 1000;
+          return new Promise(function (resolve) {
+            setTimeout(resolve, 1000);
+          });
+        });
       });
-      setMessages([tempMessages]);
     }
+    document.getElementsByClassName("message-container")[0].scrollTop = 10000;
   };
   useEffect(() => {
     if (localStorage.getItem("account")) {
@@ -618,7 +611,12 @@ const RebatePage = () => {
           <div class="header-right">
             {isSignedIn ? (
               <div class="header-cta">
-                <a>Welcome, {userForm?.forename}</a>
+                {userForm?.forename ? (
+                  <a>Welcome, {userForm?.forename}</a>
+                ) : (
+                  <a>Welcome</a>
+                )}
+
                 <br />
                 <a onClick={onSignOut}>Log Out </a>
                 <Link
@@ -650,655 +648,146 @@ const RebatePage = () => {
           </div>
         </div>
       </section>
-
-      <section class="claim-rebate-section">
-        <div class="claim-rebate-container">
-          <div class="claim-rebate-upload-and-invoices">
-            <div class="rebate-container">
-              <div class="rebate-upload">
-                <label class="upload-cta">
-                  <input type="file" onChange={changeFile} />
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    class="bi bi-cloud-arrow-up"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"
+      {!selectingRebate ? (
+        <>
+          <section class="main-section">
+            <div class="main-container">
+              <div class="rebate-container">
+                {!file ? (
+                  <div class={`card required-rebate ${errors.invoiceError !== "" && "card-error"} `}id="upload-required">
+                    <input
+                      onChange={changeFile}
+                      id="upload-file"
+                      type="file"
+                      style={{ display: "none" }}
                     />
-                    <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
-                  </svg>
-                  <h4>Upload your invoice</h4>
-                  <p>Allowed file types: .jpg, .png</p>
-                </label>
-              </div>
-            </div>
-            <div class="rebate-container">
-              <div class="rebate-header">
-                <h4>Your invoice</h4>
-              </div>
-              <div class="rebate-uploaded-invoices">
-                <div class="rebate-uploaded-invoice">
-                  {file && <img src={URL.createObjectURL(file)} />}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="rebate-container" id="rebate-found-products">
-            <h4>We found these matching rebates</h4>
-            <a onClick={(e) => setIsModal(true)}>Can't find your rebate?</a>
-            {products != [] &&
-              products.map((e, key) => {
-                return (
-                  <Rebate
-                    rebate={e}
-                    setProducts={setProducts}
-                    products={products}
-                    index={key}
-                  ></Rebate>
-                );
-              })}
-          </div>
-        </div>
-      </section>
-      <section class="rebate-form-section">
-        <form onSubmit={onSubmit}>
-          <div class="rebate-form-container">
-            <div class="rebate-form-personal-and-pet">
-              <div class="form-details">
-                <h3>Your Information</h3>
-                <div class="form-field">
-                  <label for="first-name">
-                    First Name <span>*</span>
-                  </label>
-                  <input
-                    id="first-name"
-                    type="text"
-                    value={userForm.forename}
-                    onChange={(e) =>
-                      setUserForm({ ...userForm, forename: e.target.value })
-                    }
-                  />
-                  <p
-                    className={`invalid-message ${
-                      errors.forenameError !== "" && "show"
-                    }`}
-                  >
-                    {errors.forenameError}
-                  </p>
-                </div>
-                <div class="form-field">
-                  <label for="last-name">
-                    Last Name <span>*</span>
-                  </label>
-                  <input
-                    id="last-name"
-                    type="text"
-                    value={userForm.surname}
-                    onChange={(e) =>
-                      setUserForm({ ...userForm, surname: e.target.value })
-                    }
-                  />
-                  <p
-                    className={`invalid-message ${
-                      errors.surnameError !== "" && "show"
-                    }`}
-                  >
-                    {errors.surnameError}
-                  </p>
-                </div>
-                <div class="form-field">
-                  <label for="address">
-                    Address <span>*</span>
-                  </label>
-                  <input
-                    id="address"
-                    type="text"
-                    value={userForm.address}
-                    onChange={(e) =>
-                      setUserForm({ ...userForm, address: e.target.value })
-                    }
-                  />
-                  <p
-                    className={`invalid-message ${
-                      errors.addressError !== "" && "show"
-                    }`}
-                  >
-                    {errors.addressError}
-                  </p>
-                </div>
-                <div class="form-field">
-                  <label for="city">
-                    City <span>*</span>
-                  </label>
-                  <input
-                    id="city"
-                    type="text"
-                    value={userForm.city}
-                    onChange={(e) =>
-                      setUserForm({ ...userForm, city: e.target.value })
-                    }
-                  />
-                  <p
-                    className={`invalid-message  ${
-                      errors.cityError !== "" && "show"
-                    }`}
-                  >
-                    {errors.cityError}
-                  </p>
-                </div>
-                <div class="form-field">
-                  <label for="state">
-                    State <span>*</span>
-                  </label>
-                  <input
-                    id="state"
-                    type="text"
-                    value={userForm.state}
-                    onChange={(e) =>
-                      setUserForm({ ...userForm, state: e.target.value })
-                    }
-                  />
-                  <p
-                    className={`invalid-message ${
-                      errors.stateError !== "" && "show"
-                    }`}
-                  >
-                    {errors.stateError}
-                  </p>
-                </div>
-                <div class="form-field">
-                  <label for="zip-code">
-                    Zip Code <span>*</span>
-                  </label>
-                  <input
-                    id="zip-code"
-                    type="text"
-                    value={userForm.zip}
-                    onChange={(e) =>
-                      setUserForm({ ...userForm, zip: e.target.value })
-                    }
-                  />
-                  <p
-                    className={`invalid-message ${
-                      errors.zipError !== "" && "show"
-                    }`}
-                  >
-                    {errors.zipError}
-                  </p>
-                </div>
-                <div class="form-field">
-                  <label for="phone">Phone</label>
-                  <input id="phone" type="text" />
-                  <p>
-                    By providing my phone number, I consent to my phone number
-                    being used to contact me regarding my rebate submission
-                  </p>
-                  <p
-                    className={`invalid-message ${
-                      errors.phoneError !== "" && "show"
-                    }`}
-                  >
-                    {errors.phoneError}
-                  </p>
-                </div>
-                <div class="form-field">
-                  <label for="email">
-                    Email <span>*</span>
-                  </label>
-                  <input
-                    id="email"
-                    type="text"
-                    value={userForm.email}
-                    onChange={(e) =>
-                      setUserForm({ ...userForm, email: e.target.value })
-                    }
-                  />
-                  <p
-                    className={`invalid-message ${
-                      errors.emailError !== "" && "show"
-                    }`}
-                  >
-                    {errors.emailError}
-                  </p>
-                </div>
-              </div>
-              <div class="form-details">
-                <h3>Pet Information</h3>
-                <p>
-                  Add your pet's name below. If you have multiple pets, please
-                  just put one of your pet's name.
-                </p>
-                <div class="form-field">
-                  <div class="form-field-pets-container">
-                    {userForm?.pets?.map((p, index) => {
-                      return (
-                        <div
-                          class={`form-field-pet ${
-                            userForm.pet === index && "pet-selected"
-                          }`}
-                          id="@GetPetSelectedCss(pet)"
-                          onClick={() =>
-                            setUserForm({ ...userForm, pet: index })
-                          }
-                        >
-                          <img src={p.file} alt={p.name} />
-                        </div>
-                      );
-                    })}
+                    <label for="upload-file" class="card-details">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-cloud-upload"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"
+                        />
+                        <path
+                          fill-rule="evenodd"
+                          d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"
+                        />
+                      </svg>
+                      <h3>Upload invoice</h3>
+                      <a>Max file size: 4MB, image type: .png</a>
+                    </label>
                   </div>
-                  {userForm?.pets?.length === 0 && (
-                    <div class="form-field">
-                      <label for="clinic-name">
-                        Pet Name <span>*</span>
-                      </label>
-                      <input
-                        value={userForm.pet}
-                        onChange={(e) =>
-                          setUserForm({ ...userForm, pet: e.target.value })
-                        }
-                        type="text"
-                      />
-                    </div>
-                  )}
-
-                  <p
-                    className={`invalid-message ${
-                      errors.petError !== "" && "show"
-                    }`}
+                ) : (
+                  <div
+                    class="card required-rebate"
+                    id="upload-complete"
+                    onClick={() => setInvoiceWindow("show")}
                   >
-                    {errors.petError}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rebate-form-and-purchase-details">
-              <div class="form-details">
-                <h3>Purchase Details</h3>
-                <p>
-                  Complete the information about your veterinarian clinic and
-                  medication(s).
-                </p>
-                <div class="form-field">
-                  <label for="clinic-name">
-                    Clinic Name <span>*</span>
-                  </label>
-                  <input
-                    className={`${
-                      errors.clinicError == "Good AI" && "success-input"
-                    } ${
-                      errors.clinicError ==
-                        "The AI is not confident this is correct" &&
-                      "low-confidence-input"
-                    } ${
-                      errors.clinicError ==
-                        "The AI falied to parse this information" &&
-                      "invalid-input"
-                    }`}
-                    id="clinic-name"
-                    value={purchaseForm.clinicName}
-                    onChange={(e) =>
-                      setPurchaseForm({
-                        ...purchaseForm,
-                        clinicName: e.target.value,
-                      })
-                    }
-                    type="text"
-                  />
-                  <p
-                    className={`invalid-message ${
-                      errors.clinicError !== "" &&
-                      errors.clinicError !== "Good AI" &&
-                      "show"
-                    }`}
-                  >
-                    {errors.clinicError}
-                  </p>
-                </div>
-                <div class="form-field">
-                  <label for="clinic-address">
-                    Clinic Address <span>*</span>
-                  </label>
-                  <input
-                    className={`${
-                      errors.clinicAddressError == "Good AI" && "success-input"
-                    } ${
-                      errors.clinicAddressError ==
-                        "The AI is not confident this is correct" &&
-                      "low-confidence-input"
-                    } ${
-                      errors.clinicAddressError ==
-                        "The AI falied to parse this information" &&
-                      "invalid-input"
-                    }`}
-                    id="clinic-address"
-                    type="text"
-                    value={purchaseForm.clinicAddress}
-                    onChange={(e) =>
-                      setPurchaseForm({
-                        ...purchaseForm,
-                        clinicAddress: e.target.value,
-                      })
-                    }
-                  />
-                  <p
-                    className={`invalid-message ${
-                      errors.clinicAddressError !== "" &&
-                      errors.clinicAddressError !== "Good AI" &&
-                      "show"
-                    }`}
-                  >
-                    {errors.clinicAddressError}
-                  </p>
-                </div>
-                <div class="form-field">
-                  <label for="clinic-state">
-                    Clinic State <span>*</span>
-                  </label>
-                  <input
-                    className={`${
-                      errors.clinicStateError == "Good AI" && "success-input"
-                    } ${
-                      errors.clinicStateError ==
-                        "The AI is not confident this is correct" &&
-                      "low-confidence-input"
-                    } ${
-                      errors.clinicStateError ==
-                        "The AI falied to parse this information" &&
-                      "invalid-input"
-                    }`}
-                    id="clinic-state"
-                    type="text"
-                    value={purchaseForm.clinicState}
-                    onChange={(e) =>
-                      setPurchaseForm({
-                        ...purchaseForm,
-                        clinicState: e.target.value,
-                      })
-                    }
-                  />
-                  <p
-                    className={`invalid-message ${
-                      errors.clinicStateError &&
-                      errors.clinicStateError !== "Good AI" &&
-                      "show"
-                    }`}
-                  >
-                    {errors.clinicStateError}
-                  </p>
-                </div>
-                <div class="form-field">
-                  <label for="clinic-zip-code">
-                    Clinic Zip Code <span>*</span>
-                  </label>
-                  <input
-                    className={`${
-                      errors.clinicZipError == "Good AI" && "success-input"
-                    } ${
-                      errors.clinicZipError ==
-                        "The AI is not confident this is correct" &&
-                      "low-confidence-input"
-                    } ${
-                      errors.clinicZipError ==
-                        "The AI falied to parse this information" &&
-                      "invalid-input"
-                    }`}
-                    id="clinic-zip-code"
-                    type="text"
-                    value={purchaseForm.clinicZip}
-                    onChange={(e) =>
-                      setPurchaseForm({
-                        ...purchaseForm,
-                        clinicZip: e.target.value,
-                      })
-                    }
-                  />
-                  <p
-                    className={`invalid-message ${
-                      errors.clinicZipError !== "" &&
-                      errors.clinicZipError !== "Good AI" &&
-                      "show"
-                    }`}
-                  >
-                    {errors.clinicZipError}
-                  </p>
-                </div>
-              </div>
-              <div
-                class="form-submit-cta"
-                style={{ display: "flex", justifyContent: "space-evenly" }}
-              >
-                <button type="submit">Submit</button>
-                <input type="reset" onClick={onReset}></input>
-              </div>
-            </div>
-          </div>
-        </form>
-      </section>
-      <div className={`modal ${!isModal && "hide"}`}>
-        <div class="modal-content">
-          <div class="rebate-help">
-            <a>
-              Please take a picture of your product and we'll search for a
-              rebate. Or{" "}
-              <span
-                onClick={() => {
-                  setIsChoice(true);
-                }}
-              >
-                Select a rebate manually
-              </span>
-            </a>
-          </div>
-          <div class="modal-cards">
-            <div class="rebate-container">
-              <div class="rebate-upload">
-                <label class="upload-cta">
-                  <input type="file" onChange={changeFile2} capture />
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    class="bi bi-cloud-arrow-up"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"
-                    />
-                    <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
-                  </svg>
-                  <h4>Upload an image of your product</h4>
-                  <p>Allowed file types: .jpg, .png</p>
-                </label>
-              </div>
-            </div>
-            <div class="rebate-container">
-              <div class="rebate-header">
-                <h4>Your image</h4>
-              </div>
-              <div class="rebate-uploaded-invoices">
-                <div class="rebate-uploaded-invoice">
-                  {file2 && <img src={URL.createObjectURL(file2)} />}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-options-container">
-            <div class="form-submit-cta" id="cancel-btn">
-              <button onClick={() => setIsModal(false)}>Cancel</button>
-            </div>
-            <div class="form-submit-cta">
-              <button onClick={() => setIsModal(false)}>Ok</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        className={`loading-container ${
-          (isAi || isCustom || isLayout) && "flex"
-        }`}
-      >
-        <div class="loading-content">
-          <div class="loader"></div>
-          <p>Analysing your invoice...</p>
-        </div>
-      </div>
-      <div className={`loading-container ${noRebates && "flex"}`}>
-        <div class="loading-content">
-          <div
-            onClick={() => setNoRebates(false)}
-            style={{ alignSelf: "flex-end" }}
-            className="crossHolder"
-          >
-            <ImCross />
-          </div>
-
-          <p>Sorry, we couldn't find any rebates for this receipt</p>
-        </div>
-      </div>
-      <div class={`modal-products ${isChoice && "show"}`}>
-        <div class="modal-content">
-          <div class="rebate-help">
-            <a>Please select the rebates you'd like to claim from this list.</a>
-          </div>
-          <div class="modal-cards">
-            {rebates.rebates.map((r) => {
-              return (
-                <Rebate2
-                  rebate={r}
-                  products={products}
-                  setProducts={setProducts}
-                ></Rebate2>
-              );
-            })}
-          </div>
-          <div class="form-submit-cta">
-            <button
-              onClick={() => {
-                setIsChoice(false);
-              }}
-            >
-              Ok
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className={`modal-products ${accountWindow !== "" && "show"}`}>
-        <div
-          className="modal-content"
-          height="800px"
-          style={{ overflow: "auto" }}
-        >
-          <section class="rebate-form-section">
-            {accountWindow === "login" ? (
-              <div>
-                <h2 style={{ textAlign: "center" }}> Log in</h2>
-                <form onSubmit={onSignIn}>
-                  <div className="account-container">
-                    <div class="form-field">
-                      <label for="email2">
-                        Email <span>*</span>
-                      </label>
-                      <input
-                        id="email2"
-                        type="text"
-                        value={accountForm.email}
-                        onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            email: e.target.value,
-                          })
-                        }
-                      />
-                      <p
-                        className={`invalid-message ${
-                          errors.loginEmailError !== "" && "show"
-                        }`}
+                    <div class="card-details">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-check2-circle"
+                        viewBox="0 0 16 16"
                       >
-                        {errors.loginEmailError}
-                      </p>
+                        <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
+                        <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
+                      </svg>
+                      <h3>Invoice uploaded</h3>
+                      <a>Click to view invoice</a>
                     </div>
-                    <div class="form-field">
-                      <label for="password">
-                        Password <span>*</span>
-                      </label>
-                      <input
-                        id="password"
-                        type="password"
-                        value={accountForm.password}
-                        onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            password: e.target.value,
-                          })
-                        }
-                      />
-                      <p
-                        className={`invalid-message ${
-                          errors.loginPasswordError !== "" && "show"
-                        }`}
-                      >
-                        {errors.loginPasswordError}
-                      </p>
-                    </div>
-                    <div
-                      style={{ textAlign: "center" }}
-                      className="form-submit-cta"
+                  </div>
+                )}
+
+                <a
+                  class={`card required-rebate ${errors.rebateError !== "" && "card-error"} `}
+                  id="rebate-required"
+                  onClick={() => setSelectingRebate(true)}
+                >
+                  <div class="card-details">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="bi bi-basket"
+                      viewBox="0 0 16 16"
                     >
-                      {" "}
-                      <button type="submit">Submit</button>
-                    </div>{" "}
+                      <path d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1v4.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 13.5V9a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1.217L5.07 1.243a.5.5 0 0 1 .686-.172zM2 9v4.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V9H2zM1 7v1h14V7H1zm3 3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 4 10zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 6 10zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 8 10zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5z" />
+                    </svg>
+                    <h3>Select a rebate</h3>
+                    <p>Click to select a rebate you wish to claim</p>
                   </div>
-                </form>
+                </a>
+                {products.length !== 0  && (
+                  <div
+                    className={`card required-rebate ${errors.productError && "card-error"}`}
+                    style={{ height: "200px" }}
+                    id="rebate-found-products"
+                  >
+                    <h3 textAlign="center" style={{ marginTop: "5px" }}>
+                      Your Rebates
+                    </h3>
+                    {products != [] &&
+                      products.map((e, key) => {
+                        return (
+                          <Rebate
+                            rebate={e}
+                            setProducts={setProducts}
+                            products={products}
+                            index={key}
+                          ></Rebate>
+                        );
+                      })}
+                  </div>
+                )}
               </div>
-            ) : (
-              <div>
-                <h2 style={{ textAlign: "center" }}> Sign up</h2>
-                <form onSubmit={onSignUp}>
-                  <div className="account-container">
+            </div>
+          </section>
+          <section class="rebate-form-section">
+            <form onSubmit={onSubmit}>
+              <div class="rebate-form-container">
+                <div class="rebate-form-personal-and-pet">
+                  <div class="form-details">
+                    <h3>Your Information</h3>
                     <div class="form-field">
-                      <label for="forename2">
+                      <label for="first-name">
                         First Name <span>*</span>
                       </label>
                       <input
-                        id="forname2"
+                        id="first-name"
                         type="text"
-                        value={accountForm.forename}
+                        value={userForm.forename}
                         onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            forename: e.target.value,
-                          })
+                          setUserForm({ ...userForm, forename: e.target.value })
                         }
                       />
                       <p
                         className={`invalid-message ${
-                          errors.signUpForenameError !== "" && "show"
+                          errors.forenameError !== "" && "show"
                         }`}
                       >
-                        {errors.signUpForenameError}
+                        {errors.forenameError}
                       </p>
                     </div>
                     <div class="form-field">
-                      <label for="surname2">
+                      <label for="last-name">
                         Last Name <span>*</span>
                       </label>
                       <input
-                        id="surname2"
+                        id="last-name"
                         type="text"
-                        value={accountForm.surname}
+                        value={userForm.surname}
                         onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            surname: e.target.value,
-                          })
+                          setUserForm({ ...userForm, surname: e.target.value })
                         }
                       />
                       <p
@@ -1316,12 +805,9 @@ const RebatePage = () => {
                       <input
                         id="address"
                         type="text"
-                        value={accountForm.address}
+                        value={userForm.address}
                         onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            address: e.target.value,
-                          })
+                          setUserForm({ ...userForm, address: e.target.value })
                         }
                       />
                       <p
@@ -1333,18 +819,35 @@ const RebatePage = () => {
                       </p>
                     </div>
                     <div class="form-field">
+                      <label for="city">
+                        City <span>*</span>
+                      </label>
+                      <input
+                        id="city"
+                        type="text"
+                        value={userForm.city}
+                        onChange={(e) =>
+                          setUserForm({ ...userForm, city: e.target.value })
+                        }
+                      />
+                      <p
+                        className={`invalid-message  ${
+                          errors.cityError !== "" && "show"
+                        }`}
+                      >
+                        {errors.cityError}
+                      </p>
+                    </div>
+                    <div class="form-field">
                       <label for="state">
                         State <span>*</span>
                       </label>
                       <input
                         id="state"
                         type="text"
-                        value={accountForm.state}
+                        value={userForm.state}
                         onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            state: e.target.value,
-                          })
+                          setUserForm({ ...userForm, state: e.target.value })
                         }
                       />
                       <p
@@ -1356,41 +859,15 @@ const RebatePage = () => {
                       </p>
                     </div>
                     <div class="form-field">
-                      <label for="city">
-                        City <span>*</span>
-                      </label>
-                      <input
-                        id="phone"
-                        type="text"
-                        value={accountForm.city}
-                        onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            city: e.target.value,
-                          })
-                        }
-                      />
-                      <p
-                        className={`invalid-message ${
-                          errors.cityError !== "" && "show"
-                        }`}
-                      >
-                        {errors.cityError}
-                      </p>
-                    </div>
-                    <div class="form-field">
-                      <label for="zip2">
+                      <label for="zip-code">
                         Zip Code <span>*</span>
                       </label>
                       <input
-                        id="zip2"
+                        id="zip-code"
                         type="text"
-                        value={accountForm.zip}
+                        value={userForm.zip}
                         onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            zip: e.target.value,
-                          })
+                          setUserForm({ ...userForm, zip: e.target.value })
                         }
                       />
                       <p
@@ -1402,112 +879,13 @@ const RebatePage = () => {
                       </p>
                     </div>
                     <div class="form-field">
-                      <label for="email2">
-                        Email <span>*</span>
-                      </label>
-                      <input
-                        id="email2"
-                        type="text"
-                        value={accountForm.email}
-                        onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            email: e.target.value,
-                          })
-                        }
-                      />
-                      <p
-                        className={`invalid-message ${
-                          errors.emailError !== "" && "show"
-                        }`}
-                      >
-                        {errors.emailError}
+                      <label for="phone">Phone</label>
+                      <input id="phone" type="text" />
+                      <p>
+                        By providing my phone number, I consent to my phone
+                        number being used to contact me regarding my rebate
+                        submission
                       </p>
-                    </div>
-                    <div class="form-field">
-                      <label for="confirmEmail">
-                        Confirm Email <span>*</span>
-                      </label>
-                      <input
-                        id="email2"
-                        type="text"
-                        value={accountForm.confirmEmail}
-                        onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            confirmEmail: e.target.value,
-                          })
-                        }
-                      />
-                      <p
-                        className={`invalid-message ${
-                          errors.confirmError !== "" && "show"
-                        }`}
-                      >
-                        {errors.confirmError}
-                      </p>
-                    </div>
-                    <div class="form-field">
-                      <label for="password">
-                        Password <span>*</span>
-                      </label>
-                      <input
-                        id="password"
-                        type="password"
-                        value={accountForm.password}
-                        onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            password: e.target.value,
-                          })
-                        }
-                      />
-                      <p
-                        className={`invalid-message ${
-                          errors.emailError !== "" && "show"
-                        }`}
-                      >
-                        {errors.emailError}
-                      </p>
-                    </div>
-                    <div class="form-field">
-                      <label for="confrimPassword">
-                        Confirm Password <span>*</span>
-                      </label>
-                      <input
-                        id="confirmPassword"
-                        type="password"
-                        value={accountForm.confirmPassword}
-                        onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            confirmPassword: e.target.value,
-                          })
-                        }
-                      />
-                      <p
-                        className={`invalid-message ${
-                          errors?.passwordError !== "" && "show"
-                        }`}
-                      >
-                        {errors.emailError}
-                      </p>
-                    </div>
-                    <div class="form-field">
-                      <label for="phone">
-                        Phone <span>*</span>
-                      </label>
-                      <input
-                        id="phone"
-                        type="text"
-                        value={accountForm.phone}
-                        onChange={(e) =>
-                          setAccountForm({
-                            ...accountForm,
-                            phone: e.target.value,
-                          })
-                        }
-                      />
                       <p
                         className={`invalid-message ${
                           errors.phoneError !== "" && "show"
@@ -1516,20 +894,392 @@ const RebatePage = () => {
                         {errors.phoneError}
                       </p>
                     </div>
-                    <div
-                      style={{ textAlign: "center" }}
-                      className="form-submit-cta"
-                    >
-                      {" "}
-                      <button type="submit">Submit</button>
-                    </div>{" "}
+                    <div class="form-field">
+                      <label for="email">
+                        Email <span>*</span>
+                      </label>
+                      <input
+                        id="email"
+                        type="text"
+                        value={userForm.email}
+                        onChange={(e) =>
+                          setUserForm({ ...userForm, email: e.target.value })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.emailError !== "" && "show"
+                        }`}
+                      >
+                        {errors.emailError}
+                      </p>
+                    </div>
                   </div>
-                </form>
+                  <div class="form-details">
+                    <h3>Pet Information</h3>
+                    <p>
+                      Add your pet's name below. If you have multiple pets,
+                      please just put one of your pet's name.
+                    </p>
+                    <div class="form-field">
+                      <div class="form-field-pets-container">
+                        {userForm?.pets?.map((p, index) => {
+                          return (
+                            <div
+                              class={`form-field-pet ${
+                                userForm.pet === index && "pet-selected"
+                              }`}
+                              id="@GetPetSelectedCss(pet)"
+                              onClick={() =>
+                                setUserForm({ ...userForm, pet: index })
+                              }
+                            >
+                              <img src={p.file} alt={p.name} />
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {userForm?.pets?.length === 0 && (
+                        <div class="form-field">
+                          <label for="clinic-name">
+                            Pet Name <span>*</span>
+                          </label>
+                          <input
+                            value={userForm.pet}
+                            onChange={(e) =>
+                              setUserForm({ ...userForm, pet: e.target.value })
+                            }
+                            type="text"
+                          />
+                        </div>
+                      )}
+
+                      <p
+                        className={`invalid-message ${
+                          errors.petError !== "" && "show"
+                        }`}
+                      >
+                        {errors.petError}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rebate-form-and-purchase-details">
+                  <div class="form-details">
+                    <h3>Purchase Details</h3>
+                    <p>
+                      Complete the information about your veterinarian clinic
+                      and medication(s).
+                    </p>
+                    <div class="form-field">
+                      <label for="clinic-name">
+                        Clinic Name <span>*</span>
+                      </label>
+                      <input
+                        className={`${
+                          errors.clinicError == "Good AI" && "success-input"
+                        } ${
+                          errors.clinicError ==
+                            "The AI is not confident this is correct" &&
+                          "low-confidence-input"
+                        } ${
+                          errors.clinicError ==
+                            "The AI falied to parse this information" &&
+                          "invalid-input"
+                        }`}
+                        id="clinic-name"
+                        value={purchaseForm.clinicName}
+                        onChange={(e) =>
+                          setPurchaseForm({
+                            ...purchaseForm,
+                            clinicName: e.target.value,
+                          })
+                        }
+                        type="text"
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.clinicError !== "" &&
+                          errors.clinicError !== "Good AI" &&
+                          "show"
+                        }`}
+                      >
+                        {errors.clinicError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="clinic-address">
+                        Clinic Address <span>*</span>
+                      </label>
+                      <input
+                        className={`${
+                          errors.clinicAddressError == "Good AI" &&
+                          "success-input"
+                        } ${
+                          errors.clinicAddressError ==
+                            "The AI is not confident this is correct" &&
+                          "low-confidence-input"
+                        } ${
+                          errors.clinicAddressError ==
+                            "The AI falied to parse this information" &&
+                          "invalid-input"
+                        }`}
+                        id="clinic-address"
+                        type="text"
+                        value={purchaseForm.clinicAddress}
+                        onChange={(e) =>
+                          setPurchaseForm({
+                            ...purchaseForm,
+                            clinicAddress: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.clinicAddressError !== "" &&
+                          errors.clinicAddressError !== "Good AI" &&
+                          "show"
+                        }`}
+                      >
+                        {errors.clinicAddressError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="clinic-state">
+                        Clinic State <span>*</span>
+                      </label>
+                      <input
+                        className={`${
+                          errors.clinicStateError == "Good AI" &&
+                          "success-input"
+                        } ${
+                          errors.clinicStateError ==
+                            "The AI is not confident this is correct" &&
+                          "low-confidence-input"
+                        } ${
+                          errors.clinicStateError ==
+                            "The AI falied to parse this information" &&
+                          "invalid-input"
+                        }`}
+                        id="clinic-state"
+                        type="text"
+                        value={purchaseForm.clinicState}
+                        onChange={(e) =>
+                          setPurchaseForm({
+                            ...purchaseForm,
+                            clinicState: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.clinicStateError &&
+                          errors.clinicStateError !== "Good AI" &&
+                          "show"
+                        }`}
+                      >
+                        {errors.clinicStateError}
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label for="clinic-zip-code">
+                        Clinic Zip Code <span>*</span>
+                      </label>
+                      <input
+                        className={`${
+                          errors.clinicZipError == "Good AI" && "success-input"
+                        } ${
+                          errors.clinicZipError ==
+                            "The AI is not confident this is correct" &&
+                          "low-confidence-input"
+                        } ${
+                          errors.clinicZipError ==
+                            "The AI falied to parse this information" &&
+                          "invalid-input"
+                        }`}
+                        id="clinic-zip-code"
+                        type="text"
+                        value={purchaseForm.clinicZip}
+                        onChange={(e) =>
+                          setPurchaseForm({
+                            ...purchaseForm,
+                            clinicZip: e.target.value,
+                          })
+                        }
+                      />
+                      <p
+                        className={`invalid-message ${
+                          errors.clinicZipError !== "" &&
+                          errors.clinicZipError !== "Good AI" &&
+                          "show"
+                        }`}
+                      >
+                        {errors.clinicZipError}
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="form-submit-cta"
+                    style={{ display: "flex", justifyContent: "space-evenly" }}
+                  >
+                    <button type="submit">Submit</button>
+                    <input type="reset" onClick={onReset}></input>
+                  </div>
+                </div>
               </div>
-            )}
+            </form>
           </section>
-        </div>
-      </div>
+          <div className={`modal ${!isModal && "hide"}`}>
+            <div class="modal-content">
+              <div class="rebate-help">
+                <a>
+                  Please take a picture of your product and we'll search for a
+                  rebate. Or{" "}
+                  <span
+                    onClick={() => {
+                      setIsChoice(true);
+                    }}
+                  >
+                    Select a rebate manually
+                  </span>
+                </a>
+              </div>
+              <div class="modal-cards">
+                <div class="rebate-container">
+                  <div class="rebate-upload">
+                    <label class="upload-cta">
+                      <input type="file" onChange={changeFile2} capture />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-cloud-arrow-up"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"
+                        />
+                        <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
+                      </svg>
+                      <h4>Upload an image of your product</h4>
+                      <p>Allowed file types: .jpg, .png</p>
+                    </label>
+                  </div>
+                </div>
+                <div class="rebate-container">
+                  <div class="rebate-header">
+                    <h4>Your image</h4>
+                  </div>
+                  <div class="rebate-uploaded-invoices">
+                    <div class="rebate-uploaded-invoice">
+                      {file2 && <img src={URL.createObjectURL(file2)} />}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-options-container">
+                <div class="form-submit-cta" id="cancel-btn">
+                  <button onClick={() => setIsModal(false)}>Cancel</button>
+                </div>
+                <div class="form-submit-cta">
+                  <button onClick={() => setIsModal(false)}>Ok</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class={`modal-products ${invoiceWindow !== "" && "show"}`}>
+            <div class="card" id="invoice-card">
+              <div class="card-container">
+                <div class="card-header">
+                  <h3>Your invoice</h3>
+                  <svg
+                    onClick={() => setInvoiceWindow(false)}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-x"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                  </svg>
+                </div>
+                <div class="card-body">
+                  {file && (
+                    <img src={URL.createObjectURL(file)} id="invoice-img" />
+                  )}
+                </div>
+                <div class="card-footer">
+                  <button
+                    onClick={() => {
+                      setFile(null);
+                      setInvoiceWindow("");
+                      setProducts([]);
+                      setPurchaseForm(originalPurchaseForm);
+                      setErrors(originalErrors);
+                    }}
+                  >
+                    Remove invoice
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <section class="main-section">
+          <div class="main-container">
+            <div class="rebate-container">
+              <div class="card" id="upload-required">
+                <input
+                  onChange={changeFile2}
+                  id="upload-file2"
+                  type="file"
+                  style={{ display: "none" }}
+                />
+                <label class="card-details" for="upload-file2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-camera"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z" />
+                    <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z" />
+                  </svg>
+                  <h3>Use a picture</h3>
+                  <a>
+                    Upload a photo of a product, with your camera or from a
+                    file, and our ai will match it.
+                  </a>
+                </label>
+              </div>
+              <div class="available-rebates-container">
+                {rebates.rebates.map((r) => {
+                  return (
+                    <Rebate2
+                      rebate={r}
+                      products={products}
+                      setProducts={setProducts}
+                    ></Rebate2>
+                  );
+                })}
+                <div className="footer">
+                  <div class="account-save">
+                    <a onClick={() => setSelectingRebate(false)}>Back</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
       <div className={`modal-products ${successWindow !== "" && "show"}`}>
         <div className="modal-success">
           <div className="centre">
@@ -1642,6 +1392,29 @@ const RebatePage = () => {
               className="dog-img"
             />
           )}
+        </div>
+      </div>
+      <div
+        className={`loading-container ${
+          (isAi || isCustom || isLayout) && "flex"
+        }`}
+      >
+        <div class="loading-content">
+          <div class="loader"></div>
+          <p>Analysing your invoice...</p>
+        </div>
+      </div>
+      <div className={`loading-container ${noRebates ||noProducts && "flex"}`}>
+        <div class="no-content">
+          <div
+            onClick={() => {setNoRebates(false); setNoProducts(false)}}
+            style={{ alignSelf: "flex-end" }}
+            className="crossHolder"
+          >
+            <ImCross />
+          </div>
+
+          <p>Sorry, we couldn't find any rebates for this receipt</p>
         </div>
       </div>
     </>

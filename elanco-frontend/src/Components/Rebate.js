@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import {ImCross} from "react-icons/im"
-const Rebate = (rebate) => {
+const Rebate = ({rebate,products,setProducts,index}) => {
   const [selectedValue, setSelectedValue] = useState();
   const onCross = () =>{
-    const tempProducts = [...rebate.products]
-    
+    const tempProducts = [...products]
 
      tempProducts.splice(rebate.index,1)
-    rebate.setProducts(tempProducts)
+    setProducts(tempProducts)
   }
 
-  const subRebate = rebate.rebate;
+  const subRebate = rebate;
   
   return (
   
@@ -26,9 +25,8 @@ const Rebate = (rebate) => {
             <h5>Offer details</h5>
             <h5>Rebate value</h5>
             <h5>Is Selected</h5>
-
-            {subRebate.rebateValue.map((val, key) => {
-               
+            
+            {subRebate.rebateValue?.map((val, key) => {
               return (
                 <>
                   <p className>{val[0]}</p>
@@ -36,9 +34,9 @@ const Rebate = (rebate) => {
                   <input
                     type="checkbox"
                     onChange={() => {
-                      let tempProducts = rebate.products;
-                      tempProducts[rebate.index].chosenProduct = key;
-                      console.log(tempProducts[rebate.index]);
+                      let tempProducts = [...products]
+                      tempProducts[index].chosenProduct = key;
+                      setProducts(tempProducts)            
                       setSelectedValue(key)}}
                     checked={selectedValue === key}
                   />
@@ -46,7 +44,7 @@ const Rebate = (rebate) => {
               );
             })}
           </div>
-          <a>Terms and Conditions</a>
+
         </div>
       </div>
     </>

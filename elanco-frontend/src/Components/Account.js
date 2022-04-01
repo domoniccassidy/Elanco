@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { updateUser } from "../html";
 import "../accountStyle.css";
 
@@ -12,6 +12,7 @@ const originalNewDetails = {
 
 
 const Account = () => {
+  const nav = useNavigate();
   const [account, setAccount] = useState(
     JSON.parse(localStorage.getItem("account"))
   );
@@ -65,13 +66,17 @@ const Account = () => {
         setNewDetails(originalNewDetails);
     }
   }
-
+  const onSignOut = (e) =>{
+    e.preventDefault();
+    localStorage.removeItem("account");
+    nav("/")
+  }
   return (
     <section class="account-section">
       <div class="account-container">
         <div class="account-header">
           <div class="account-header-details">
-            <h3>Welcome, {account?.forename}!</h3>
+            {account?.forename ? <h3>Welcome, {account?.forename}!</h3>: <h3>Welcome!</h3>}
             <p>Your Elanco account</p>
           </div>
         </div>
@@ -136,7 +141,7 @@ const Account = () => {
               asp-page="/Account/Logout"
               asp-route-returnUrl="/"
             >
-              <button type="submit">
+              <button onClick={onSignOut}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -403,7 +408,8 @@ const Account = () => {
                             </label>
                             <input
                               onChange={(e) => {
-                                setFileName(e.target.value);
+                                var filename = e.target.value.replace(/^.*\\/, "");
+                                setFileName(filename);
                                 let reader = new FileReader();
                                 reader.onloadend = () => {
                                   const base64String = reader.result.replace(
@@ -475,7 +481,8 @@ const Account = () => {
                             </label>
                             <input
                               onChange={(e) => {
-                                setFileName(e.target.value);
+                                var filename = e.target.value.replace(/^.*\\/, "");
+                                setFileName(filename);
                                 let reader = new FileReader();
                                 reader.onloadend = () => {
                                   const base64String = reader.result.replace(
@@ -605,7 +612,6 @@ const Account = () => {
                         Confirm Password
                       </label>
                       <input  type="password"
-                        asp-for="Input.PhoneNumber"
                         class="form-control"
                         value={newDetails.confirmPassword}
                         onChange={(e) =>
