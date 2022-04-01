@@ -23,8 +23,11 @@ Elanco will provide sample images of test receipts/products and we’d like to s
 
 ![Alt Text](https://github.com/hbux/ElancoRebatesProject/blob/main/Documentation/markdown-images/ER_gif.gif)
 
-## Viewing the project
-
+## Running the application
+First, open up two terminals and navigate one to "elanco-frontend" and the other to "elanco-backend"
+To start the backend, enter the command "npm run dev" in the terminal located in "elanco-backend"
+To start the frontend, first enter the command "npm install" in the terminal located in "elanco-frontend"
+Then, enter the command "npm start" in the same terminal"
 
 ## System Design and Flow
 ### Project Structure
