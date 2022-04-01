@@ -6,7 +6,7 @@
     1. [Project folder structure](#project-structure)
     2. [User interface showcase](#user-interface)
 5. [New requirements and requirement changes](#new-requirements-and-requirement-changes)
-    2. [User interface showcase](#user-interface-requirement-changes)
+    1. [User interface showcase](#user-interface-requirement-changes)
 6. [Tools and frameworks used](#tools-and-frameworks)
 8. [Source code examples](#source-code-examples)
 
