@@ -1,7 +1,7 @@
 ## Elanco Rebates - Table of contents
 1. [Introduction](#introduction)
 2. [Task](#task)
-3. [Viewing the project](#viewing-the-project)
+3. [Running the application](#running-the-application)
 4. [System design and flow](#system-design-and-flow)
     1. [Project folder structure](#project-structure)
     2. [User interface showcase](#user-interface)
