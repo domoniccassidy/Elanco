@@ -41,17 +41,21 @@ body {
 }
 
 .header-cta a {
+  
   font-size: 14px;
   text-decoration: none;
   cursor: pointer;
 }
-
+.flex-col{
+  display: flex;
+  flex-direction: column;
+}
 .header-user-cta {
   display: none;
 }
 .header-right {
   font-family: "Montserrat";
-  width: 20%;
+  width: 40%;
 }
 /* CLAIM REBATE */
 .claim-rebate-section {
@@ -254,6 +258,13 @@ select {
 }
 
 @media only screen and (min-width: 600px) {
+  .flex-col{
+    flex-direction: row;
+    justify-content: space-evenly;
+  }
+  .link{
+    font-size: 20px !important;
+  }
   .header-container,
   .claim-rebate-container,
   .rebate-form-section {
@@ -399,6 +410,7 @@ select {
 }
 
 @media only screen and (min-width: 600px) {
+
   .modal-content {
     max-width: 560px; /* Could be more or less, depending on screen size */
   }

@@ -10,12 +10,19 @@ const originalNewDetails = {
     confirmPassword:"",
 }
 
+const originalAccountErrors ={
+  emailError:"",
+  confirmEmailError:"",
+  passwordError:"",
+  confirmPasswordError:"",
+}
 
 const Account = () => {
   const nav = useNavigate();
   const [account, setAccount] = useState(
     JSON.parse(localStorage.getItem("account"))
   );
+  const [accountErrors,setAccountErrors] =useState(originalAccountErrors)
   const [newDetails, setNewDetails] = useState(originalNewDetails);
   const [content, setContent] = useState("details");
   const [addingPet, setAddingPet] = useState(false);
@@ -54,10 +61,23 @@ const Account = () => {
   };
   const onUpdateEmail = (e) =>{
     e.preventDefault()
-    if(newDetails.confirmEmail === newDetails.email){
-        setAccount({...account, email:newDetails.email})
-        setNewDetails(originalNewDetails);
+    let numbers = 0;
+    let newErrors = accountErrors;
+    if(newDetails.confirmEmail !== newDetails.email){
+      
+      numbers ++;
+      newErrors.confirmEmailError = "The emails don't match"
+      setAccountErrors(newErrors)
     }
+    if(newDetails.email === ""){
+      numbers ++;
+    }
+    if(numbers === 0){
+      setAccount({...account,email:newDetails.email})
+      setNewDetails(originalNewDetails)
+    }
+    setAddingPet(addingPet)
+    setAccountErrors(newErrors)
   }
   const onUpdatePassword = (e) =>{
       e.preventDefault()
@@ -516,7 +536,7 @@ const Account = () => {
             </form>
           )}
           {content == "email" && (
-            <form id="profile-form"  class="account-contents">
+            <form id="profile-form" onSubmit={onUpdateEmail} class="account-contents">
               <h1>Email</h1>
               <div class="account-cards">
                 <partial name="_StatusMessage" for="StatusMessage" />
@@ -538,12 +558,14 @@ const Account = () => {
                           setAccount({ ...account, forename: e.target.value })
                         }
                       />
+                     
                     </div>
                     <div class="form-field">
                       <label asp-for="Account.LastName" class="form-label">
                         New Email
                       </label>
                       <input
+                      type="email"
                         asp-for="Account.LastName"
                         class="form-control"
                         value={newDetails.email}
@@ -557,15 +579,22 @@ const Account = () => {
                       <label asp-for="Input.PhoneNumber" class="form-label">
                         Confirm Email
                       </label>
-                      <input
-                        asp-for="Input.PhoneNumber"
+                      <input type="email"
+                     
                         class="form-control"
                         value={newDetails.confirmEmail}
                         onChange={(e) =>
                           setNewDetails({ ...newDetails, confirmEmail: e.target.value })
                         }
                       />
-                      <button className="add-pet-button" onClick={onUpdateEmail}>
+                       <p
+                        className={`invalid-message ${
+                          accountErrors.confirmEmailError !== "" && "show"
+                        }`}
+                      >
+                        {accountErrors.confirmEmailError}
+                      </p>
+                      <button className="add-pet-button" >
                           Update Email
                         </button>
                       <span asp-validation-for="Input.PhoneNumber"></span>

@@ -258,26 +258,11 @@ const RebatePage = () => {
   };
   useEffect(() => {
     if (file != null) {
-      setErrors({
-        forenameError: "",
-        surnameError: "",
-        addressError: "",
-        cityError: "",
-        stateError: "",
-        zipError: "",
-        phoneError: "",
-        emailError: "",
-        confirmError: "",
-        petError: "",
-        clinicError: "",
-        clinicAddressError: "",
-        clinicStateError: "",
-        clinicZipError: "",
-      });
+      setErrors(originalErrors);
       analyze().then(() => {
 
         if (products.length < 1) {
-          console.log("hello");
+
           setNoRebates(true);
         }
       });
@@ -610,39 +595,39 @@ const RebatePage = () => {
           </div>
           <div class="header-right">
             {isSignedIn ? (
-              <div class="header-cta">
+              <div class="header-cta flex-col">
                 {userForm?.forename ? (
-                  <a>Welcome, {userForm?.forename}</a>
+                  <a style={{marginRight:"5px"}} className = "link">Welcome, {userForm?.forename}</a>
                 ) : (
-                  <a>Welcome</a>
+                  <a className="link">Welcome</a>
                 )}
 
-                <br />
-                <a onClick={onSignOut}>Log Out </a>
+            
                 <Link
                   style={{ textDecoration: "none", color: "white" }}
                   to="/account"
+                  className="link"
                 >
                   My details
                 </Link>
               </div>
             ) : (
               <div class="header-cta">
-                <Link
+                <div><Link marginLeft= "5px"
                   to="/auth"
                   style={{ textDecoration: "none", color: "white" }}
-                  className="clickable"
+                  className="clickable link"
                 >
                   Log in
                 </Link>{" "}
                 /{" "}
-                <Link
+                <Link marginLeft= "5px"
                   to="/auth/signup"
                   style={{ textDecoration: "none", color: "white" }}
-                  className="clickable"
+                  className="clickable link"
                 >
                   Sign up
-                </Link>
+                </Link></div>
               </div>
             )}
           </div>
@@ -708,7 +693,7 @@ const RebatePage = () => {
                 )}
 
                 <a
-                  class={`card required-rebate ${errors.rebateError !== "" && "card-error"} `}
+                  class={`card required-rebate ${errors.rebateError !== ""&& "card-error"} `}
                   id="rebate-required"
                   onClick={() => setSelectingRebate(true)}
                 >
