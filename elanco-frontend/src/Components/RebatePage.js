@@ -43,9 +43,9 @@ const originalErrors = {
   signUpCityError: "",
   signUpStateError: "",
   signUpZipError: "",
-  invoiceError:"",
-  productError:"",
-  rebateError:"",
+  invoiceError: "",
+  productError: "",
+  rebateError: "",
 };
 const originalUserForm = {
   forename: "",
@@ -82,7 +82,7 @@ const RebatePage = () => {
   const [isCustom, setIsCustom] = useState(false);
   const [isLayout, setIsLayout] = useState(false);
   const [noRebates, setNoRebates] = useState(false);
-  const [noProducts,setNoProducts] = useState(false)
+  const [noProducts, setNoProducts] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [dogMessage, setDogMessage] = useState(true);
   const [userMessage, setUserMessage] = useState("");
@@ -194,19 +194,19 @@ const RebatePage = () => {
       newErrors.clinicZipError = "You must include the zip code of your clinic";
     }
     if (products.length === 0) {
-      newErrors.rebateError = "You must claim at least one rebate"
+      newErrors.rebateError = "You must claim at least one rebate";
       number++;
     }
     if (file == null) {
-      newErrors.invoiceError = "You must upload a receipt or invoice"
+      newErrors.invoiceError = "You must upload a receipt or invoice";
       number++;
     }
-    products.forEach(e =>{
-      if(e?.chosenProduct === undefined){
-        number++
-        newErrors.productError = "You must select a type of product"
+    products.forEach((e) => {
+      if (e?.chosenProduct === undefined) {
+        number++;
+        newErrors.productError = "You must select a type of product";
       }
-    })
+    });
     if (number == 0) {
       setSuccessWindow("open");
     }
@@ -260,9 +260,7 @@ const RebatePage = () => {
     if (file != null) {
       setErrors(originalErrors);
       analyze().then(() => {
-
-        if (products.length < 1) {
-
+        if (products.length < 1 || products === undefined) {
           setNoRebates(true);
         }
       });
@@ -274,9 +272,8 @@ const RebatePage = () => {
       analyzeForm().then((e) => {
         if (products.length > 0) {
           setSelectingRebate(false);
-        }
-        else{
-          setNoProducts(true)
+        } else {
+          setNoProducts(true);
         }
       });
     }
@@ -597,12 +594,13 @@ const RebatePage = () => {
             {isSignedIn ? (
               <div class="header-cta flex-col">
                 {userForm?.forename ? (
-                  <a style={{marginRight:"5px"}} className = "link">Welcome, {userForm?.forename}</a>
+                  <a style={{ marginRight: "5px" }} className="link">
+                    Welcome, {userForm?.forename}
+                  </a>
                 ) : (
                   <a className="link">Welcome</a>
                 )}
 
-            
                 <Link
                   style={{ textDecoration: "none", color: "white" }}
                   to="/account"
@@ -613,21 +611,25 @@ const RebatePage = () => {
               </div>
             ) : (
               <div class="header-cta">
-                <div><Link marginLeft= "5px"
-                  to="/auth"
-                  style={{ textDecoration: "none", color: "white" }}
-                  className="clickable link"
-                >
-                  Log in
-                </Link>{" "}
-                /{" "}
-                <Link marginLeft= "5px"
-                  to="/auth/signup"
-                  style={{ textDecoration: "none", color: "white" }}
-                  className="clickable link"
-                >
-                  Sign up
-                </Link></div>
+                <div>
+                  <Link
+                    marginLeft="5px"
+                    to="/auth"
+                    style={{ textDecoration: "none", color: "white" }}
+                    className="clickable link"
+                  >
+                    Log in
+                  </Link>{" "}
+                  /{" "}
+                  <Link
+                    marginLeft="5px"
+                    to="/auth/signup"
+                    style={{ textDecoration: "none", color: "white" }}
+                    className="clickable link"
+                  >
+                    Sign up
+                  </Link>
+                </div>
               </div>
             )}
           </div>
@@ -639,7 +641,12 @@ const RebatePage = () => {
             <div class="main-container">
               <div class="rebate-container">
                 {!file ? (
-                  <div class={`card required-rebate ${errors.invoiceError !== "" && "card-error"} `}id="upload-required">
+                  <div
+                    class={`card required-rebate ${
+                      errors.invoiceError !== "" && "card-error"
+                    } `}
+                    id="upload-required"
+                  >
                     <input
                       onChange={changeFile}
                       id="upload-file"
@@ -693,7 +700,9 @@ const RebatePage = () => {
                 )}
 
                 <a
-                  class={`card required-rebate ${errors.rebateError !== ""&& "card-error"} `}
+                  class={`card required-rebate ${
+                    errors.rebateError !== "" && "card-error"
+                  } `}
                   id="rebate-required"
                   onClick={() => setSelectingRebate(true)}
                 >
@@ -712,9 +721,11 @@ const RebatePage = () => {
                     <p>Click to select a rebate you wish to claim</p>
                   </div>
                 </a>
-                {products.length !== 0  && (
+                {products.length !== 0 && (
                   <div
-                    className={`card required-rebate ${errors.productError && "card-error"}`}
+                    className={`card required-rebate ${
+                      errors.productError && "card-error"
+                    }`}
                     style={{ height: "200px" }}
                     id="rebate-found-products"
                   >
@@ -1182,7 +1193,9 @@ const RebatePage = () => {
                 <div class="card-header">
                   <h3>Your invoice</h3>
                   <svg
-                    onClick={() => setInvoiceWindow(false)}
+                    onClick={() => {
+                      setInvoiceWindow("");
+                    }}
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
                     height="16"
@@ -1389,10 +1402,15 @@ const RebatePage = () => {
           <p>Analysing your invoice...</p>
         </div>
       </div>
-      <div className={`loading-container ${noRebates ||noProducts && "flex"}`}>
+      <div
+        className={`loading-container ${(noRebates || noProducts) && "flex"}`}
+      >
         <div class="no-content">
           <div
-            onClick={() => {setNoRebates(false); setNoProducts(false)}}
+            onClick={() => {
+              setNoRebates(false);
+              setNoProducts(false);
+            }}
             style={{ alignSelf: "flex-end" }}
             className="crossHolder"
           >

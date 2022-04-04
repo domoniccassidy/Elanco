@@ -41,12 +41,11 @@ body {
 }
 
 .header-cta a {
-  
   font-size: 14px;
   text-decoration: none;
   cursor: pointer;
 }
-.flex-col{
+.flex-col {
   display: flex;
   flex-direction: column;
 }
@@ -248,7 +247,6 @@ select {
 }
 
 @media only screen and (min-width: 450px) {
-  
   .rebate-form-container {
     display: grid;
     grid-template-columns: 1fr;
@@ -258,11 +256,11 @@ select {
 }
 
 @media only screen and (min-width: 600px) {
-  .flex-col{
+  .flex-col {
     flex-direction: row;
     justify-content: space-evenly;
   }
-  .link{
+  .link {
     font-size: 20px !important;
   }
   .header-container,
@@ -295,8 +293,8 @@ select {
 }
 
 @media only screen and (min-width: 860px) {
-  .available-rebates-container{
-    grid-template-columns: repeat(2,1fr);
+  .available-rebates-container {
+    grid-template-columns: repeat(2, 1fr);
   }
   .rebate-form-container {
     display: grid;
@@ -332,13 +330,11 @@ select {
 .rebate-container > a {
   font-size: 14px;
   margin: 5px 0;
- 
- 
+
   cursor: pointer;
 }
 
 .modal {
-  
   display: block; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
@@ -410,7 +406,6 @@ select {
 }
 
 @media only screen and (min-width: 600px) {
-
   .modal-content {
     max-width: 560px; /* Could be more or less, depending on screen size */
   }
@@ -609,8 +604,7 @@ select {
   box-shadow: 0 3px 8px 0 rgb(0 0 0 / 45%);
   border-radius: 9999px;
 }
-.modal-success{
-  
+.modal-success {
   position: absolute;
   inset: 50% auto auto 50%;
   border: none;
@@ -624,7 +618,7 @@ select {
   max-height: 100vh;
   width: 100%;
 }
-.modal-top-row{
+.modal-top-row {
   align-items: center;
   text-align: center;
   display: flex;
@@ -634,23 +628,20 @@ select {
   background-color: #fff;
   color: var(--main-dark-blue);
 }
-.centre{
+.centre {
   border-radius: 1.5rem;
   width: 50%;
-  margin:auto;
+  margin: auto;
   min-width: 350px;
 }
-.success-dog{
+.success-dog {
   display: flex;
   flex-direction: column;
   margin-top: -4rem;
   margin-bottom: 1rem;
   align-items: center;
- 
-
-
 }
-.extra-dog{
+.extra-dog {
   overflow: hidden;
   align-items: center;
   border-radius: 50%;
@@ -662,37 +653,39 @@ select {
   background-color: #fff;
   box-shadow: 0 3px 8px 0 rgb(0 0 0 / 45%);
 }
-.modal-second-row{
+.modal-second-row {
   padding: 2rem;
-  background-color: rgba(253,252,239,1);
+  background-color: rgba(253, 252, 239, 1);
   border-bottom-left-radius: 1.5rem;
   border-bottom-right-radius: 1.5rem;
 }
-h3{
+h3 {
   text-align: center;
   color: var(--main-dark-blue);
 }
 
-.success-button{
+.success-button {
   margin: 1rem;
   min-width: 300px;
   width: 50%;
-  transition: .3s ease;
-    vertical-align: middle;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    align-items: center;
-    text-align: center;
-    color: #033357;
-    border: 1px solid rgba(3,51,87,1);
-    cursor: pointer;
-    font-weight: 700;
+  transition: 0.3s ease;
+  vertical-align: middle;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  align-items: center;
+  text-align: center;
+  color: #033357;
+  border: 1px solid rgba(3, 51, 87, 1);
+  cursor: pointer;
+  font-weight: 700;
 }
-.success-button:hover{
+.success-button:hover {
   color: white;
   background-color: #033357;
-}.form-field-pets-container {
+}
+.form-field-pets-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
@@ -712,10 +705,11 @@ h3{
 
 .pet-selected {
   border: 4px solid var(--primary-light-blue);
-}.rebate-container {
+}
+.rebate-container {
   display: grid;
   grid-template-columns: 1fr;
-  
+
   gap: 10px;
   max-width: 850px;
 }
@@ -727,11 +721,10 @@ h3{
   cursor: pointer;
 }
 
-.available-rebates-container{
+.available-rebates-container {
   display: grid;
-  
-  gap: 10px;
 
+  gap: 10px;
 }
 
 .info-card-details {
@@ -767,19 +760,19 @@ h3{
   text-align: center;
   cursor: pointer;
 }
-.card-details >svg{
+.card-details > svg {
   width: 40px;
   height: 40px;
 }
-.required-rebate{
-  height: 120px ;
-    text-decoration: none;
+.required-rebate {
+  height: 120px;
+  text-decoration: none;
 }
 
-.card-error{
+.card-error {
   border: 2px solid red !important;
 }
-.no-content{
+.no-content {
   background-color: var(--secondary-white);
   margin: 15vh auto; /* 15% from the top and centered */
   padding: 20px;
@@ -789,7 +782,6 @@ h3{
   height: 15vh;
   display: flex;
   flex-direction: column;
-  
-  gap: 25px;
+
   align-items: center;
 }
