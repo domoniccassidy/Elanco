@@ -28,7 +28,7 @@ Elanco will provide sample images of test receipts/products and we’d like to s
 * Download or clone the repository
 * Open the folder 'Elanco-master' in Visual Studio Code
 * Within VSCode, navigate to the folder 'elanco-backend', right click > Open with integrated terminal
-* Enter 'npm run dev' into the terminal
+* Enter 'npm start' into the terminal
 * Navigate to the folder 'elanco-frontend', right click > Open with integrated terminal
 * Enter 'npm install' into the new terminal, wait for the install to complete
 * Enter 'npm start' into the new terminal
