@@ -33,6 +33,9 @@ Elanco will provide sample images of test receipts/products and we’d like to s
 * Enter 'npm install' into the new terminal, wait for the install to complete
 * Enter 'npm start' into the new terminal
 
+## Link to Deployed Website
+ * https://sparkly-malasada-f8d47e.netlify.app
+
 ## System Design and Flow
 ### Project Structure
 * **github/workflows:** The action for hosting on Azure.
