@@ -1,9 +1,10 @@
-import axios from "axios"
+import axios from "axios";
 
-const userApi = "http://localhost:5000/users"
+const userApi = "https://elanco-heroku.herokuapp.com/users";
 
-export const signIn = (userData) => axios.post(`${userApi}/signin`,userData)
+export const signIn = (userData) => axios.post(`${userApi}/signin`, userData);
 
-export const signUp = (userData) => axios.post(`${userApi}/signup`,userData)
+export const signUp = (userData) => axios.post(`${userApi}/signup`, userData);
 
-export const updateUser = (userData) => axios.put(`${userApi}/update`,userData)
+export const updateUser = (userData) =>
+  axios.put(`${userApi}/update`, userData);
