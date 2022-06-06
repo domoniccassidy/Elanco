@@ -584,7 +584,7 @@ select {
 }
 .message {
   font-family: "Montserrat";
-  width: 75%;
+  max-width: 75%;
   padding: 5%;
   border-radius: 10px;
   margin-bottom: 1em;
@@ -603,6 +603,9 @@ select {
   background-color: white;
   box-shadow: 0 3px 8px 0 rgb(0 0 0 / 45%);
   border-radius: 9999px;
+}
+.message-holder {
+  overflow: auto;
 }
 .modal-success {
   position: absolute;

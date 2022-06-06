@@ -16,6 +16,62 @@ const msRest = require("@azure/ms-rest-js");
 const qnamaker = require("@azure/cognitiveservices-qnamaker");
 const qnamaker_runtime = require("@azure/cognitiveservices-qnamaker-runtime");
 
+const states = {
+  MI: "Michigan",
+  AL: "Alabama",
+  AK: "Alaska",
+  AZ: "Arizona",
+  AR: "Arkansas",
+  CA: "California",
+  CO: "Colorado",
+  CT: "Connecticut",
+  DE: "Delaware",
+  DC: "District of Columbia",
+  FL: "Florida",
+  GA: "Georgia",
+  HI: "Hawaii",
+  ID: "Idaho",
+  IL: "Illinois",
+  IN: "Indiana",
+  IA: "Iowa",
+  KS: "Kansas",
+  KY: "Kentucky",
+  LA: "Louisiana",
+  ME: "Maine",
+  MD: "Maryland",
+  MA: "Massachusetts",
+  MN: "Minnesota",
+  MS: "Mississippi",
+  MO: "Missouri",
+  MT: "Montana",
+  NE: "Nebraska",
+  NV: "Nevada",
+  NH: "New Hampshire",
+  NJ: "New Jersey",
+  NM: "New Mexico",
+  NY: "New York",
+  NC: "North Carolina",
+  ND: "North Dakota",
+  OH: "Ohio",
+  OK: "Oklahoma",
+  OR: "Oregon",
+  PA: "Pennsyvania",
+  PR: "Puerto Rico",
+  RI: "Rhode Island",
+  SC: "South Carolina",
+  SD: "South Dakota",
+  TN: "Tennessee",
+  TX: "Texas",
+  UT: "Utah",
+  VT: "Vermont",
+  VA: "Virginia",
+  VI: "Virgin Islands",
+  WA: "Washington",
+  WV: "West Virginia",
+  WI: "Wisconsin",
+  WY: "Wyoming",
+};
+
 const originalErrors = {
   forenameError: "",
   surnameError: "",
@@ -113,9 +169,9 @@ const RebatePage = () => {
     pets: [],
   });
 
-  const endpoint = "https://b7012116-psp-fr.cognitiveservices.azure.com/";
-  const apiKey = "ad53f517375c4133a6e27a518b9c598e  ";
-  const modelId = "b89dd708-cd7e-4424-9208-899d9c06d53e";
+  const endpoint = "https://elanco-form.cognitiveservices.azure.com/";
+  const apiKey = "857f6020ae4649bc94cc612af47831fb";
+  const modelId = "e85411ea-e983-4f72-860d-ce3867bf090e";
   const subscriptionKey = "9075ee73270c411e933d44e16100ae66";
   const chatEndpoint = "https://elano-bot.cognitiveservices.azure.com/";
   const runtimeEndpoint = "https://elano-bot.azurewebsites.net";
@@ -372,7 +428,7 @@ const RebatePage = () => {
     );
     const poller = await client.beginRecognizeInvoices(file, {
       onProgress: (state) => {
-        console.log(`status: ${state.status}`);
+        console.log(`invoice: ${state.status}`);
       },
     });
     const forms = await poller.pollUntilDone();
@@ -389,7 +445,9 @@ const RebatePage = () => {
             );
             rebates.rebates.map((rebate) => {
               if (
-                rebate?.productNames?.includes(element.value.Description.value)
+                rebate?.productNames?.includes(
+                  element?.value?.Description?.value
+                )
               ) {
                 setProducts([
                   ...products,
@@ -415,13 +473,15 @@ const RebatePage = () => {
       clinicState: "",
       clinicZip: "",
     });
+
     const client = new FormRecognizerClient(
       endpoint,
       new AzureKeyCredential(apiKey)
     );
+
     const poller = await client.beginRecognizeCustomForms(modelId, file, {
       onProgress: (state) => {
-        console.log(`status: ${state.status}`);
+        console.log(`Custom: ${state.status}`);
       },
     });
     const forms = await poller.pollUntilDone();
@@ -469,10 +529,18 @@ const RebatePage = () => {
             }
 
             if (tempAddress?.length > 1) {
+              const tempAddress2 = field.value?.split(",");
+              if (!states[tempAddress[tempAddress?.length - 2]]) {
+                tempErrors = {
+                  ...tempErrors,
+
+                  clinicStateError: "The AI falied to parse this information",
+                };
+              }
               tempPurchaseForm = {
                 ...tempPurchaseForm,
-                clinicAddress: field.value,
-                clinicState: tempAddress[tempAddress?.length - 2],
+                clinicAddress: tempAddress2[0],
+                clinicState: states[tempAddress[tempAddress?.length - 2]],
                 clinicZip: tempAddress[tempAddress?.length - 1],
               };
             }
@@ -594,11 +662,11 @@ const RebatePage = () => {
             {isSignedIn ? (
               <div class="header-cta flex-col">
                 {userForm?.forename ? (
-                  <a style={{ marginRight: "5px" }} className="link">
+                  <span style={{ marginRight: "5px" }} className="link">
                     Welcome, {userForm?.forename}
-                  </a>
+                  </span>
                 ) : (
-                  <a className="link">Welcome</a>
+                  <span className="link">Welcome</span>
                 )}
 
                 <Link
@@ -911,6 +979,9 @@ const RebatePage = () => {
                       </p>
                     </div>
                   </div>
+                </div>
+
+                <div className="rebate-form-and-purchase-details">
                   <div class="form-details">
                     <h3>Pet Information</h3>
                     <p>
@@ -959,9 +1030,6 @@ const RebatePage = () => {
                       </p>
                     </div>
                   </div>
-                </div>
-
-                <div className="rebate-form-and-purchase-details">
                   <div class="form-details">
                     <h3>Purchase Details</h3>
                     <p>
@@ -1349,7 +1417,11 @@ const RebatePage = () => {
           <div className="chat-holder">
             <div className="message-container">
               {messages.map((m) => {
-                return <div className={`message ${m.sender}`}>{m.text}</div>;
+                return (
+                  <div className="message-holder">
+                    <div className={`message ${m.sender}`}>{m.text}</div>
+                  </div>
+                );
               })}
             </div>
           </div>
